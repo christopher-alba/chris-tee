@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -79,43 +79,140 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Shop = () => {
+  let categoryTitle = 'ALL';
+  const searchParams = useLocation().search;
   const classes = useStyles();
   const { loading, error, data } = useQuery(GET_PRODUCTS);
   const [currentPage, setCurrentPage] = useState(1);
   const [lowerCount, setLowerCount] = useState(0);
   const [upperCount, setUpperCount] = useState(8);
-  const searchParams = useLocation().search;
-  console.log(searchParams);
+  const [products, setProducts] = useState([]);
+  const [emptyResults, setEmptyResults] = useState(false);
+  const [basicFilter, setBasicFilter] = useState('');
+  const [clothingTypeFilter, setClothingTypeFilter] = useState('');
+  const [orientationFilter, setOrientationFilter] = useState('');
 
+  useEffect(() => {
+    if (!emptyResults && data) {
+      setProducts(data.products);
+    }
+
+    if (searchParams.includes('masculine') && data) {
+      setProducts(
+        data.products.filter((product) => {
+          if (product.orientation === 'MASCULINE') {
+            return true;
+          }
+          return false;
+        })
+      );
+    }
+    if (searchParams.includes('feminine') && data) {
+      setProducts(
+        data.products.filter((product) => {
+          if (product.orientation === 'FEMININE') {
+            return true;
+          }
+          return false;
+        })
+      );
+    }
+  }, [categoryTitle, data, searchParams]);
   if (loading) {
     return <div>loading...</div>;
   }
 
-  let products = data.products;
-  let categoryTitle = 'ALL';
-
   if (searchParams.includes('masculine')) {
     categoryTitle = 'MASCULINE';
-    products = products.filter((product) => {
-      if (product.orientation === 'MASCULINE') {
-        return true;
-      }
-      return false;
-    });
   }
   if (searchParams.includes('feminine')) {
     categoryTitle = 'FEMININE';
-    products = products.filter((product) => {
-      if (product.orientation === 'FEMININE') {
-        return true;
-      }
-      return false;
-    });
   }
 
+  const handleBasicFilterChange = (evt) => {
+    setBasicFilter(evt.target.value);
+  };
+
+  const handleClothingTypeFilterChange = (evt) => {
+    setClothingTypeFilter(evt.target.value);
+  };
+
+  const handleOrientationFilterChange = (evt) => {
+    setOrientationFilter(evt.target.value);
+  };
+  const handleSetFiltersClick = () => {
+    setProducts(() => {
+      const newProducts = data.products.filter((product) => {
+        let activeFilters = 0;
+        let matches = 0;
+        //check which filters are active
+        if (clothingTypeFilter !== '') {
+          activeFilters++;
+        }
+        if (orientationFilter !== '') {
+          activeFilters++;
+        }
+        //check if product matches active filters
+        if (product.clothingType === clothingTypeFilter.toUpperCase()) {
+          matches++;
+        }
+        if (product.orientation === orientationFilter.toUpperCase()) {
+          matches++;
+        }
+        //return true only if matched for all active filters
+        if (matches === activeFilters) {
+          return true;
+        }
+
+        return false;
+      });
+
+      if (newProducts.length === 0) {
+        setEmptyResults(true);
+      }
+
+      if (basicFilter === '') {
+        return newProducts;
+      }
+
+      const orderedProducts = newProducts.sort((a, b) => {
+        if (basicFilter === 'lowest') {
+          return a.price - b.price;
+        }
+        if (basicFilter === 'highest') {
+          return b.price - a.price;
+        }
+        var nameA = a.name.toUpperCase(); // ignore upper and lowercase
+        var nameB = b.name.toUpperCase(); // ignore upper and lowercase
+        if (basicFilter === 'a-z') {
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+
+          // names must be equal
+          return 0;
+        }
+        if (basicFilter === 'z-a') {
+          if (nameA < nameB) {
+            return 1;
+          }
+          if (nameA > nameB) {
+            return -1;
+          }
+        }
+      });
+
+      return orderedProducts;
+    });
+  };
+
   const totalPages =
-    Math.floor(data.products.length / 8) + (data.products.length % 8 >= 1);
-  products = products.slice(lowerCount, upperCount);
+    Math.floor(products.length / 8) + (products.length % 8 >= 1);
+
+  const renderedProducts = products.slice(lowerCount, upperCount);
 
   return (
     <Container>
@@ -129,12 +226,18 @@ const Shop = () => {
           <InputLabel id="basic" className={classes.filterLabel}>
             Basic
           </InputLabel>
-          <Select className={classes.filter} labelId="basic" id="basic">
-            <MenuItem>none</MenuItem>
-            <MenuItem>lowest price</MenuItem>
-            <MenuItem>highest price</MenuItem>
-            <MenuItem>A-Z</MenuItem>
-            <MenuItem>Z-A</MenuItem>
+          <Select
+            value={basicFilter}
+            className={classes.filter}
+            labelId="basic"
+            id="basic"
+            onChange={handleBasicFilterChange}
+          >
+            <MenuItem value="">none</MenuItem>
+            <MenuItem value="lowest">lowest price</MenuItem>
+            <MenuItem value="highest">highest price</MenuItem>
+            <MenuItem value="a-z">A-Z</MenuItem>
+            <MenuItem value="z-a">Z-A</MenuItem>
           </Select>
         </FormControl>
         <FormControl variant="outlined" className={classes.filterWrapper}>
@@ -145,12 +248,15 @@ const Shop = () => {
             className={classes.filter}
             labelId="clothing-type"
             id="clothing-type"
+            value={clothingTypeFilter}
+            onChange={handleClothingTypeFilterChange}
           >
-            <MenuItem>t-shirts</MenuItem>
-            <MenuItem>shorts</MenuItem>
-            <MenuItem>pants</MenuItem>
-            <MenuItem>jackets</MenuItem>
-            <MenuItem>underwear</MenuItem>
+            <MenuItem value="">none</MenuItem>
+            <MenuItem value="tshirt">t-shirts</MenuItem>
+            <MenuItem value="shorts">shorts</MenuItem>
+            <MenuItem value="pants">pants</MenuItem>
+            <MenuItem value="jacket">jackets</MenuItem>
+            <MenuItem value="underwear">underwear</MenuItem>
           </Select>
         </FormControl>
         <FormControl variant="outlined" className={classes.filterWrapper}>
@@ -161,11 +267,13 @@ const Shop = () => {
             className={classes.filter}
             labelId="orientation"
             id="orientation"
+            value={orientationFilter}
+            onChange={handleOrientationFilterChange}
           >
-            <MenuItem>none</MenuItem>
-            <MenuItem>feminine</MenuItem>
-            <MenuItem>masculine</MenuItem>
-            <MenuItem>unisex</MenuItem>
+            <MenuItem value="">none</MenuItem>
+            <MenuItem value="feminine">feminine</MenuItem>
+            <MenuItem value="masculine">masculine</MenuItem>
+            <MenuItem value="unisex">unisex</MenuItem>
           </Select>
         </FormControl>
         <Button
@@ -173,6 +281,10 @@ const Shop = () => {
           className={classes.setFilterButton}
           onClick={() => {
             location.replace('#/shop');
+            handleSetFiltersClick();
+            setLowerCount(0);
+            setUpperCount(8);
+            setCurrentPage(1);
           }}
         >
           Set Filters
@@ -192,12 +304,14 @@ const Shop = () => {
         >
           Previous Page
         </Button>
-        {currentPage}/{totalPages}
+        {renderedProducts.length > 0
+          ? `${currentPage}/${totalPages}`
+          : 'No products matched your filters'}
         <Button
           variant="outlined"
-          disabled={upperCount >= data.products.length}
+          disabled={upperCount >= products.length}
           onClick={() => {
-            if (upperCount < data.products.length) {
+            if (upperCount < products.length) {
               setLowerCount(lowerCount + 8);
               setUpperCount(upperCount + 8);
               setCurrentPage(currentPage + 1);
@@ -209,7 +323,7 @@ const Shop = () => {
       </Box>
 
       <Box className={classes.productsWrapper}>
-        {products.map((product) => (
+        {renderedProducts.map((product) => (
           <Box key={product.id} className={classes.product}>
             <img
               src="https://picsum.photos/seed/picsum/400/300"
