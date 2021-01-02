@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { useQuery } from '@apollo/client';
 import { GET_PRODUCTS } from '../ApolloClient/queries';
+import { useLocation } from 'react-router-dom';
 
 const useStyles = makeStyles(() => ({
   filterContainerWrapper: {
@@ -83,19 +84,45 @@ const Shop = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [lowerCount, setLowerCount] = useState(0);
   const [upperCount, setUpperCount] = useState(8);
+  const searchParams = useLocation().search;
+  console.log(searchParams);
 
   if (loading) {
     return <div>loading...</div>;
   }
 
+  let products = data.products;
+  let categoryTitle = 'ALL';
+
+  if (searchParams.includes('masculine')) {
+    categoryTitle = 'MASCULINE';
+    products = products.filter((product) => {
+      if (product.orientation === 'MASCULINE') {
+        return true;
+      }
+      return false;
+    });
+  }
+  if (searchParams.includes('feminine')) {
+    categoryTitle = 'FEMININE';
+    products = products.filter((product) => {
+      if (product.orientation === 'FEMININE') {
+        return true;
+      }
+      return false;
+    });
+  }
+
   const totalPages =
     Math.floor(data.products.length / 8) + (data.products.length % 8 >= 1);
-  const products = data.products.slice(lowerCount, upperCount);
+  products = products.slice(lowerCount, upperCount);
 
   return (
     <Container>
       <h1 className={classes.shopTitle}>SHOPPING PAGE</h1>
-      <h2 className={classes.shopSubTitle}>BROWSING ALL PRODUCTS</h2>
+      <h2 className={classes.shopSubTitle}>
+        BROWSING {categoryTitle} PRODUCTS
+      </h2>
       <Box className={classes.filterContainerWrapper}>
         <h2 className={classes.filterTitle}>FILTERS</h2>
         <FormControl variant="outlined" className={classes.filterWrapper}>
@@ -119,11 +146,11 @@ const Shop = () => {
             labelId="clothing-type"
             id="clothing-type"
           >
-            <MenuItem>none</MenuItem>
-            <MenuItem>lowest price</MenuItem>
-            <MenuItem>highest price</MenuItem>
-            <MenuItem>A-Z</MenuItem>
-            <MenuItem>Z-A</MenuItem>
+            <MenuItem>t-shirts</MenuItem>
+            <MenuItem>shorts</MenuItem>
+            <MenuItem>pants</MenuItem>
+            <MenuItem>jackets</MenuItem>
+            <MenuItem>underwear</MenuItem>
           </Select>
         </FormControl>
         <FormControl variant="outlined" className={classes.filterWrapper}>
@@ -141,7 +168,13 @@ const Shop = () => {
             <MenuItem>unisex</MenuItem>
           </Select>
         </FormControl>
-        <Button variant="outlined" className={classes.setFilterButton}>
+        <Button
+          variant="outlined"
+          className={classes.setFilterButton}
+          onClick={() => {
+            location.replace('#/shop');
+          }}
+        >
           Set Filters
         </Button>
       </Box>

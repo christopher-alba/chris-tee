@@ -14,6 +14,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
+import { useLocation } from 'react-router-dom';
 
 const useStyles = makeStyles({
   mainNav: {
@@ -49,6 +50,13 @@ const useStyles = makeStyles({
     height: '56px',
     marginLeft: '10px',
   },
+  navbarBrand: {
+    letterSpacing: 5,
+  },
+  navlinkHighlighted: {
+    borderBottom: '1px solid black',
+    borderRadius: 0,
+  },
 });
 
 function HideOnScroll(props) {
@@ -76,18 +84,48 @@ HideOnScroll.propTypes = {
 
 const Navbar = () => {
   const classes = useStyles();
+  const location = useLocation();
   return (
     <HideOnScroll>
       <AppBar className={classes.mainNav} position="sticky">
         <Container>
           <Toolbar className={classes.toolbar}>
             <Box className={classes.navLeft}>
-              <Typography variant="h6">CHRIS TEE</Typography>
-              <Button style={{ marginLeft: '50px' }} color="inherit">
+              <Typography className={classes.navbarBrand} variant="h6">
+                CHRIS TEE
+              </Typography>
+              <Button
+                className={
+                  location.pathname === '/' ? classes.navlinkHighlighted : ''
+                }
+                style={{ marginLeft: '50px' }}
+                color="inherit"
+                href="#/"
+              >
                 Home
               </Button>
-              <Button color="inherit">Shop</Button>
-              <Button color="inherit">About</Button>
+              <Button
+                className={
+                  location.pathname === '/shop'
+                    ? classes.navlinkHighlighted
+                    : ''
+                }
+                color="inherit"
+                href="#/shop"
+              >
+                Shop
+              </Button>
+              <Button
+                className={
+                  location.pathname === '/about'
+                    ? classes.navlinkHighlighted
+                    : ''
+                }
+                color="inherit"
+                href="#/about"
+              >
+                About
+              </Button>
             </Box>
             <Box className={classes.navRight}>
               <Box className={classes.inputContainer}>
@@ -103,13 +141,40 @@ const Navbar = () => {
                   <SearchIcon />
                 </Button>
               </Box>
-              <IconButton>
+              <IconButton
+                className={
+                  location.pathname === '/cart'
+                    ? classes.navlinkHighlighted
+                    : ''
+                }
+                href="#/cart"
+              >
                 <Badge badgeContent={4} color="primary">
                   <ShoppingCartIcon />
                 </Badge>
               </IconButton>
-              <Button color="inherit">Signup</Button>
-              <Button color="inherit">Login</Button>
+              <Button
+                className={
+                  location.pathname === '/signup'
+                    ? classes.navlinkHighlighted
+                    : ''
+                }
+                color="inherit"
+                href="#/signup"
+              >
+                Signup
+              </Button>
+              <Button
+                className={
+                  location.pathname === '/login'
+                    ? classes.navlinkHighlighted
+                    : ''
+                }
+                color="inherit"
+                href="#/login"
+              >
+                Login
+              </Button>
             </Box>
           </Toolbar>
         </Container>

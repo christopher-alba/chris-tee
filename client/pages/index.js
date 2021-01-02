@@ -73,7 +73,7 @@ const Homepage = () => {
         <Container className={classes.homeLandingInner}>
           <h1 className={classes.homeLandingHeader}>WELCOME TO CHRIS TEE</h1>
           <p className={classes.homeLandingText}>
-            helping people of all sizes and genders find their style
+            Helping people of all sizes and genders find their style
           </p>
         </Container>
       </Box>

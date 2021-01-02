@@ -8,12 +8,27 @@ type Mutation {
   deleteProduct(id: ID!): ID!
 }
 
+enum Orientation {
+  MASCULINE
+  FEMININE
+  UNISEX
+}
+
+enum ClothingType {
+  SHORTS
+  PANTS
+  TSHIRT
+  JACKET
+  UNDERWEAR
+}
 type Product {
   id: ID!
   name: String!
   price: Float!
   description: String!
   image: String!
+  orientation: Orientation
+  clothingType: ClothingType
 }
 
 input createProductInput {
@@ -21,6 +36,8 @@ input createProductInput {
   price: Float!
   description: String!
   image: String!
+  orientation: Orientation
+  clothingType: ClothingType
 }
 
 input updateProductInput {
@@ -30,5 +47,3 @@ input updateProductInput {
   description: String!
   image: String!
 }
-
-

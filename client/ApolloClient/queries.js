@@ -8,6 +8,8 @@ export const GET_PRODUCTS = gql`
       price
       description
       image
+      orientation
+      clothingType
     }
   }
 `;
