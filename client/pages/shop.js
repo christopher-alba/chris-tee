@@ -75,6 +75,11 @@ const useStyles = makeStyles(() => ({
     marginBottom: '20px',
     display: 'flex',
     justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  pageNumber: {
+    letterSpacing: 5,
+    fontWeight: 200,
   },
 }));
 
@@ -304,9 +309,11 @@ const Shop = () => {
         >
           Previous Page
         </Button>
-        {renderedProducts.length > 0
-          ? `${currentPage}/${totalPages}`
-          : 'No products matched your filters'}
+        <h4 className={classes.pageNumber}>
+          {renderedProducts.length > 0
+            ? `Page ${currentPage}/${totalPages}`
+            : 'No products matched your filters'}
+        </h4>
         <Button
           variant="outlined"
           disabled={upperCount >= products.length}
