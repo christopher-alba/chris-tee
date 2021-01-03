@@ -9,6 +9,13 @@ const productSchema = new mongoose.Schema({
   clothingType: String,
 });
 
+const userSchema = new mongoose.Schema({
+  username: String,
+  password: String,
+  token: String,
+});
+
 module.exports = {
   productSchema,
+  userSchema,
 };
