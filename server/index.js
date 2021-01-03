@@ -6,6 +6,7 @@ const { resolve } = require('path');
 const { makeExecutableSchema } = require('graphql-tools');
 const { readFileSync } = require('fs');
 const { resolvers } = require('./graphql/resolvers/resolvers');
+const {getPayload} = require('./util')
 require('./mongoose/connect');
 
 const typeDefs = gql(
@@ -21,19 +22,20 @@ const schema = makeExecutableSchema({
 server.use(cors());
 server.use(
   '/graphql',
-  graphqlHTTP({
+  graphqlHTTP((req) => ({
     schema,
     rootValue: resolvers,
     graphiql: true,
-    context: ({ req }) => {
+    context: () => {
       // get the user token from the headers
+      console.log(req.headers.authorization);
       const token = req.headers.authorization || '';
       // try to retrieve a user with the token
       const { payload: user, loggedIn } = getPayload(token);
       // add the user to the context
       return { user, loggedIn };
     },
-  })
+  }))
 );
 
 const port = process.env.PORT || 3000;

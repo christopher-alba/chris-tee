@@ -6,7 +6,7 @@ const {
   getProducts,
 } = require('../../mongoose/db/product');
 const { register, login } = require('../../mongoose/db/auth');
-
+const { AuthenticationError } = require('apollo-server');
 exports.resolvers = {
   // Mutations
   createProduct: ({ product }) => {
@@ -40,10 +40,10 @@ exports.resolvers = {
   // Queries
   product: ({ id }) => getProduct(id),
   products: () => getProducts(),
-  me: (parent, args, context, info) => {
+  me: (args, context) => {
     // console.log(context.user)
-    if (context.loggedIn) {
-      return context.user;
+    if (context().loggedIn) {
+      return context().user;
     } else {
       throw new AuthenticationError('Please Login Again!');
     }
