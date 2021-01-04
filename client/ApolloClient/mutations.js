@@ -35,3 +35,29 @@ export const CREATE_PRODUCT = gql`
     }
   }
 `;
+
+export const EDIT_PRODUCT = gql`
+  mutation EditProduct(
+    $id: ID!
+    $name: String!
+    $price: Float!
+    $description: String!
+    $image: String!
+    $orientation: Orientation!
+    $clothingType: ClothingType!
+  ) {
+    updateProduct(
+      product: {
+        id: $id
+        name: $name
+        price: $price
+        description: $description
+        image: $image
+        orientation: $orientation
+        clothingType: $clothingType
+      }
+    ) {
+      id
+    }
+  }
+`;

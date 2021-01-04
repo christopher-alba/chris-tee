@@ -21,18 +21,29 @@ const deleteProduct = async (id) => {
 };
 
 const getProduct = async (id) => {
-  const item = await Product.findOne({_id: id})
-  return item
-}
+  const item = await Product.findOne({ _id: id });
+  if (item) {
+    return item;
+  }
+  return {
+    id: 'productNotFound',
+    name: 'productNotFound',
+    price: 0,
+    description: 'productNotFound',
+    image: 'productNotFound',
+    orientation: 'NONE',
+    clothingType: 'NONE',
+  };
+};
 
 const getProducts = async () => {
-  const items = await Product.find()
-  return items
-}
+  const items = await Product.find();
+  return items;
+};
 module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
   getProduct,
-  getProducts
+  getProducts,
 };

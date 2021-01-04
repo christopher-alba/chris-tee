@@ -12,6 +12,7 @@ import { GET_PRODUCTS, AUTHENTICATE } from '../ApolloClient/queries';
 import { useLocation } from 'react-router-dom';
 import { DELETE_PRODUCT } from '../ApolloClient/mutations';
 import CreateProductDialog from '../components/createProductDialog';
+import EditProductDialog from '../components/editProductDialog';
 
 const useStyles = makeStyles(() => ({
   filterContainerWrapper: {
@@ -117,6 +118,7 @@ const Shop = () => {
   const [orientationFilter, setOrientationFilter] = useState('');
   const [selectedProduct, setSelectedProduct] = useState('');
   const [createProductOpen, setCreateProductOpen] = useState(false);
+  const [editProductOpen, setEditProductOpen] = useState(false);
 
   useEffect(() => {
     if (!emptyResults && data) {
@@ -164,6 +166,9 @@ const Shop = () => {
 
   const handleCreateProductClose = () => {
     setCreateProductOpen(false);
+  };
+  const handleEditProductClose = () => {
+    setEditProductOpen(false);
   };
   const handleBasicFilterChange = (evt) => {
     setBasicFilter(evt.target.value);
@@ -374,7 +379,13 @@ const Shop = () => {
           </Button>
           {selectedProduct && (
             <>
-              <Button variant="outlined" className={classes.adminControlButton}>
+              <Button
+                variant="outlined"
+                className={classes.adminControlButton}
+                onClick={() => {
+                  setEditProductOpen(true);
+                }}
+              >
                 Edit Product
               </Button>
               <Button
@@ -417,8 +428,12 @@ const Shop = () => {
             }}
           >
             <img
-              src="https://picsum.photos/seed/picsum/400/300"
+              src={product.image}
               alt="product"
+              onError={(image) => {
+                image.target.src =
+                  'https://picsum.photos/seed/picsum/400/300';
+              }}
             />
             <Box className={classes.productLabel}>
               <p>{product.name}</p>
@@ -433,6 +448,11 @@ const Shop = () => {
       <CreateProductDialog
         handleCreateProductClose={handleCreateProductClose}
         createProductOpen={createProductOpen}
+      />
+      <EditProductDialog
+        handleEditProductClose={handleEditProductClose}
+        editProductOpen={editProductOpen}
+        id={selectedProduct}
       />
     </Container>
   );

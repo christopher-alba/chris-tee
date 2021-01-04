@@ -12,12 +12,14 @@ type Mutation {
 }
 
 enum Orientation {
+  NONE
   MASCULINE
   FEMININE
   UNISEX
 }
 
 enum ClothingType {
+  NONE
   SHORTS
   PANTS
   TSHIRT
@@ -49,6 +51,8 @@ input updateProductInput {
   price: Float!
   description: String!
   image: String!
+   orientation: Orientation!
+  clothingType: ClothingType!
 }
 
 type User {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '../components/dialogTitle';
@@ -8,18 +8,18 @@ import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
-import { useMutation } from '@apollo/client';
-import { GET_PRODUCTS } from '../ApolloClient/queries';
-import { CREATE_PRODUCT } from '../ApolloClient/mutations';
+import { useMutation, useQuery } from '@apollo/client';
+import { GET_PRODUCTS, GET_PRODUCT } from '../ApolloClient/queries';
+import { EDIT_PRODUCT } from '../ApolloClient/mutations';
 
 const useStyles = makeStyles({
-  createProductForm: {
+  editProductForm: {
     padding: '50px',
     display: 'flex',
     flexDirection: 'column',
     width: '500px',
   },
-  createProductFormInput: {
+  editProductFormInput: {
     marginBottom: '20px',
   },
   filterLabel: {
@@ -27,10 +27,7 @@ const useStyles = makeStyles({
     padding: '5px',
   },
 });
-const CreateProductDialog = ({
-  handleCreateProductClose,
-  createProductOpen,
-}) => {
+const EditProductDialog = ({ handleEditProductClose, editProductOpen, id }) => {
   const classes = useStyles();
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
@@ -38,48 +35,74 @@ const CreateProductDialog = ({
   const [imageUrl, setImageUrl] = useState('');
   const [clothingType, setClothingType] = useState('');
   const [orientation, setOrientation] = useState('');
-  const [createProduct] = useMutation(CREATE_PRODUCT);
+  const [editProduct] = useMutation(EDIT_PRODUCT);
+  const { loading, error, data } = useQuery(GET_PRODUCT, {
+    variables: {
+      id: id || 'invalidid123',
+    },
+  });
+
+  useEffect(() => {
+    if (data) {
+      const { product } = data;
+      setName(product.name);
+      setPrice(product.price);
+      setDescription(product.description);
+      setImageUrl(product.image);
+      setClothingType(product.clothingType.toLowerCase());
+      setOrientation(product.orientation.toLowerCase());
+    }
+  }, [data, editProductOpen]);
+
+  if (loading) {
+    return <div>loading...</div>;
+  }
+
   return (
-    <Dialog onClose={handleCreateProductClose} open={createProductOpen}>
+    <Dialog onClose={handleEditProductClose} open={editProductOpen}>
       <DialogTitle
         id="customized-dialog-title"
-        onClose={handleCreateProductClose}
+        onClose={handleEditProductClose}
       >
-        Create a new product
+        Edit a product
       </DialogTitle>
-      <form className={classes.createProductForm}>
+      <form className={classes.editProductForm}>
         <TextField
+          value={name}
           label="name"
           variant="outlined"
-          className={classes.createProductFormInput}
+          className={classes.editProductFormInput}
           onChange={(evt) => {
             setName(evt.target.value);
           }}
         />
         <TextField
+          value={price}
           label="price"
           variant="outlined"
-          className={classes.createProductFormInput}
+          className={classes.editProductFormInput}
           type="number"
           onChange={(evt) => {
             setPrice(evt.target.value);
           }}
         />
         <TextField
+          value={description}
           label="description"
           multiline={true}
           rowsMax={4}
           rows={4}
           variant="outlined"
-          className={classes.createProductFormInput}
+          className={classes.editProductFormInput}
           onChange={(evt) => {
             setDescription(evt.target.value);
           }}
         />
         <TextField
+          value={imageUrl}
           label="image url"
           variant="outlined"
-          className={classes.createProductFormInput}
+          className={classes.editProductFormInput}
           onChange={(evt) => {
             setImageUrl(evt.target.value);
           }}
@@ -92,7 +115,7 @@ const CreateProductDialog = ({
             labelId="clothing-type"
             id="clothing-type"
             value={clothingType}
-            className={classes.createProductFormInput}
+            className={classes.editProductFormInput}
             onChange={(evt) => {
               setClothingType(evt.target.value);
             }}
@@ -112,7 +135,7 @@ const CreateProductDialog = ({
             labelId="orientation"
             id="orientation"
             value={orientation}
-            className={classes.createProductFormInput}
+            className={classes.editProductFormInput}
             onChange={(evt) => {
               setOrientation(evt.target.value);
             }}
@@ -125,8 +148,9 @@ const CreateProductDialog = ({
         <Button
           variant="outlined"
           onClick={() => {
-            createProduct({
+            editProduct({
               variables: {
+                id: id,
                 name: name,
                 price: Number(price),
                 description: description,
@@ -136,16 +160,15 @@ const CreateProductDialog = ({
               },
               refetchQueries: [{ query: GET_PRODUCTS }],
             }).then(() => {
-              
-              handleCreateProductClose();
+              handleEditProductClose();
             });
           }}
         >
-          Create
+          Submit
         </Button>
       </form>
     </Dialog>
   );
 };
 
-export default CreateProductDialog;
+export default EditProductDialog;
