@@ -97,6 +97,12 @@ const useStyles = makeStyles(() => ({
     bottom: 10,
     right: 30,
   },
+  productImage: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+  },
 }));
 
 const Shop = () => {
@@ -430,9 +436,10 @@ const Shop = () => {
             <img
               src={product.image}
               alt="product"
+              className={classes.productImage}
               onError={(image) => {
                 image.target.src =
-                  'https://picsum.photos/seed/picsum/400/300';
+                  'https://www.k3ma.com/wp-content/uploads/2017/04/default-image.jpg';
               }}
             />
             <Box className={classes.productLabel}>
