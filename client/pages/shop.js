@@ -7,9 +7,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import { makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import { useQuery } from '@apollo/client';
-import { GET_PRODUCTS } from '../ApolloClient/queries';
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_PRODUCTS, AUTHENTICATE } from '../ApolloClient/queries';
 import { useLocation } from 'react-router-dom';
+import { DELETE_PRODUCT } from '../ApolloClient/mutations';
 
 const useStyles = makeStyles(() => ({
   filterContainerWrapper: {
@@ -81,6 +82,19 @@ const useStyles = makeStyles(() => ({
     letterSpacing: 5,
     fontWeight: 200,
   },
+  adminControls: {
+    border: '1px solid lightgray',
+    padding: '10px',
+    borderRadius: '0.5rem',
+  },
+  adminControlButton: {
+    marginRight: '10px',
+  },
+  visitProduct: {
+    position: 'absolute',
+    bottom: 10,
+    right: 30,
+  },
 }));
 
 const Shop = () => {
@@ -88,6 +102,10 @@ const Shop = () => {
   const searchParams = useLocation().search;
   const classes = useStyles();
   const { loading, error, data } = useQuery(GET_PRODUCTS);
+  const { loading: authLoading, error: authError, data: authData } = useQuery(
+    AUTHENTICATE
+  );
+  const [deleteProduct] = useMutation(DELETE_PRODUCT);
   const [currentPage, setCurrentPage] = useState(1);
   const [lowerCount, setLowerCount] = useState(0);
   const [upperCount, setUpperCount] = useState(8);
@@ -96,7 +114,7 @@ const Shop = () => {
   const [basicFilter, setBasicFilter] = useState('');
   const [clothingTypeFilter, setClothingTypeFilter] = useState('');
   const [orientationFilter, setOrientationFilter] = useState('');
-
+  const [selectedProduct, setSelectedProduct] = useState('');
   useEffect(() => {
     if (!emptyResults && data) {
       setProducts(data.products);
@@ -132,6 +150,14 @@ const Shop = () => {
   }
   if (searchParams.includes('feminine')) {
     categoryTitle = 'FEMININE';
+  }
+
+  let adminPermission = false;
+  if (authData) {
+    if (authData.me.permission === 'ADMIN') {
+      adminPermission = true;
+    }
+    console.log(adminPermission);
   }
 
   const handleBasicFilterChange = (evt) => {
@@ -221,7 +247,9 @@ const Shop = () => {
 
   return (
     <Container>
-      <h1 className={classes.shopTitle}>SHOPPING PAGE</h1>
+      <h1 className={classes.shopTitle}>
+        {adminPermission ? 'ADMIN SHOPPING PAGE' : 'SHOPPING PAGE'}
+      </h1>
       <h2 className={classes.shopSubTitle}>
         BROWSING {categoryTitle} PRODUCTS
       </h2>
@@ -328,10 +356,49 @@ const Shop = () => {
           Next Page
         </Button>
       </Box>
-
+      {adminPermission && (
+        <Box className={classes.adminControls}>
+          <Button variant="outlined" className={classes.adminControlButton}>
+            Create Product
+          </Button>
+          {selectedProduct && (
+            <>
+              <Button variant="outlined" className={classes.adminControlButton}>
+                Edit Product
+              </Button>
+              <Button
+                variant="outlined"
+                className={classes.adminControlButton}
+                onClick={() => {
+                  deleteProduct({
+                    variables: {
+                      id: selectedProduct,
+                    },
+                    refetchQueries: [{ query: GET_PRODUCTS }],
+                  });
+                }}
+              >
+                Delete Product
+              </Button>
+            </>
+          )}
+          <Button variant="outlined" className={classes.adminControlButton}>
+            Delete all Products
+          </Button>
+        </Box>
+      )}
       <Box className={classes.productsWrapper}>
         {renderedProducts.map((product) => (
-          <Box key={product.id} className={classes.product}>
+          <Box
+            key={product.id}
+            className={classes.product}
+            onClick={() => {
+              adminPermission ? setSelectedProduct(product.id) : '';
+            }}
+            style={{
+              border: product.id === selectedProduct ? '1px solid black' : '',
+            }}
+          >
             <img
               src="https://picsum.photos/seed/picsum/400/300"
               alt="product"
@@ -339,6 +406,9 @@ const Shop = () => {
             <Box className={classes.productLabel}>
               <p>{product.name}</p>
               <p>NZD${product.price}</p>
+              <Button variant="outlined" className={classes.visitProduct}>
+                Visit
+              </Button>
             </Box>
           </Box>
         ))}

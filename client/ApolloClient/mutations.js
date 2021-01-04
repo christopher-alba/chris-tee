@@ -7,3 +7,8 @@ export const LOGIN = gql`
         }
     }
 `
+export const DELETE_PRODUCT = gql`
+    mutation DeleteProduct($id: ID!){
+        deleteProduct(id: $id)
+    }
+`

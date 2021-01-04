@@ -4,6 +4,9 @@ import Container from '@material-ui/core/Container';
 import { makeStyles } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@apollo/client';
+import { AUTHENTICATE } from '../ApolloClient/queries';
+
 const useStyles = makeStyles({
   homeLandingWrapper: {
     background: '#2b2b2b',
@@ -66,12 +69,21 @@ const useStyles = makeStyles({
 });
 
 const Homepage = () => {
+  const { loading, error, data } = useQuery(AUTHENTICATE);
   const classes = useStyles();
+  let name = null;
+  if (data) {
+    console.log(data);
+    name = data.me.username;
+  }
+
   return (
     <Box>
       <Box className={classes.homeLandingWrapper}>
         <Container className={classes.homeLandingInner}>
-          <h1 className={classes.homeLandingHeader}>WELCOME TO CHRIS TEE</h1>
+          <h1 className={classes.homeLandingHeader}>
+            WELCOME TO CHRIS TEE {name}
+          </h1>
           <p className={classes.homeLandingText}>
             Helping people of all sizes and genders find their style
           </p>
