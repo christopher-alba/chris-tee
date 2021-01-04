@@ -86,7 +86,6 @@ HideOnScroll.propTypes = {
 
 const Navbar = () => {
   const { loading, error, data } = useQuery(AUTHENTICATE);
-  console.log(data);
   const classes = useStyles();
   const location = useLocation();
   return (

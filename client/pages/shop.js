@@ -11,6 +11,7 @@ import { useQuery, useMutation } from '@apollo/client';
 import { GET_PRODUCTS, AUTHENTICATE } from '../ApolloClient/queries';
 import { useLocation } from 'react-router-dom';
 import { DELETE_PRODUCT } from '../ApolloClient/mutations';
+import CreateProductDialog from '../components/createProductDialog';
 
 const useStyles = makeStyles(() => ({
   filterContainerWrapper: {
@@ -115,6 +116,8 @@ const Shop = () => {
   const [clothingTypeFilter, setClothingTypeFilter] = useState('');
   const [orientationFilter, setOrientationFilter] = useState('');
   const [selectedProduct, setSelectedProduct] = useState('');
+  const [createProductOpen, setCreateProductOpen] = useState(false);
+
   useEffect(() => {
     if (!emptyResults && data) {
       setProducts(data.products);
@@ -157,9 +160,11 @@ const Shop = () => {
     if (authData.me.permission === 'ADMIN') {
       adminPermission = true;
     }
-    console.log(adminPermission);
   }
 
+  const handleCreateProductClose = () => {
+    setCreateProductOpen(false);
+  };
   const handleBasicFilterChange = (evt) => {
     setBasicFilter(evt.target.value);
   };
@@ -358,7 +363,13 @@ const Shop = () => {
       </Box>
       {adminPermission && (
         <Box className={classes.adminControls}>
-          <Button variant="outlined" className={classes.adminControlButton}>
+          <Button
+            variant="outlined"
+            className={classes.adminControlButton}
+            onClick={() => {
+              setCreateProductOpen(true);
+            }}
+          >
             Create Product
           </Button>
           {selectedProduct && (
@@ -380,11 +391,17 @@ const Shop = () => {
               >
                 Delete Product
               </Button>
+              <Button
+                variant="outlined"
+                className={classes.adminControlButton}
+                onClick={() => {
+                  setSelectedProduct('');
+                }}
+              >
+                Deselect Product
+              </Button>
             </>
           )}
-          <Button variant="outlined" className={classes.adminControlButton}>
-            Delete all Products
-          </Button>
         </Box>
       )}
       <Box className={classes.productsWrapper}>
@@ -413,6 +430,10 @@ const Shop = () => {
           </Box>
         ))}
       </Box>
+      <CreateProductDialog
+        handleCreateProductClose={handleCreateProductClose}
+        createProductOpen={createProductOpen}
+      />
     </Container>
   );
 };

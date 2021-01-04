@@ -30,8 +30,8 @@ type Product {
   price: Float!
   description: String!
   image: String!
-  orientation: Orientation
-  clothingType: ClothingType
+  orientation: Orientation!
+  clothingType: ClothingType!
 }
 
 input createProductInput {
@@ -39,8 +39,8 @@ input createProductInput {
   price: Float!
   description: String!
   image: String!
-  orientation: Orientation
-  clothingType: ClothingType
+  orientation: Orientation!
+  clothingType: ClothingType!
 }
 
 input updateProductInput {
