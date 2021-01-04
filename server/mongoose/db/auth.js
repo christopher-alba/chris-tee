@@ -2,9 +2,11 @@ const { User } = require('../models');
 const { getToken, encryptPassword, comparePassword } = require('../../util');
 const { AuthenticationError } = require('apollo-server');
 const register = async (args) => {
+  console.log(args);
   const newUser = {
     username: args.username,
     password: await encryptPassword(args.password),
+    permission: args.permission,
   };
   // Check conditions
   const user = await User.findOne({ username: args.username });

@@ -15,6 +15,8 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
 import { useLocation } from 'react-router-dom';
+import { AUTHENTICATE } from '../ApolloClient/queries';
+import { useQuery } from '@apollo/client';
 
 const useStyles = makeStyles({
   mainNav: {
@@ -83,6 +85,8 @@ HideOnScroll.propTypes = {
 };
 
 const Navbar = () => {
+  const { loading, error, data } = useQuery(AUTHENTICATE);
+  console.log(data);
   const classes = useStyles();
   const location = useLocation();
   return (
@@ -164,17 +168,29 @@ const Navbar = () => {
               >
                 Signup
               </Button>
-              <Button
-                className={
-                  location.pathname === '/login'
-                    ? classes.navlinkHighlighted
-                    : ''
-                }
-                color="inherit"
-                href="#/login"
-              >
-                Login
-              </Button>
+              {data ? (
+                <Button
+                  color="inherit"
+                  onClick = {() => {
+                    localStorage.removeItem('authorization')
+                    window.location.reload()
+                  }}
+                >
+                  Logout
+                </Button>
+              ) : (
+                <Button
+                  className={
+                    location.pathname === '/login'
+                      ? classes.navlinkHighlighted
+                      : ''
+                  }
+                  color="inherit"
+                  href="#/login"
+                >
+                  Login
+                </Button>
+              )}
             </Box>
           </Toolbar>
         </Container>

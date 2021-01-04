@@ -7,7 +7,7 @@ type Mutation {
   createProduct(product: createProductInput!): Product!
   updateProduct(product: updateProductInput!): Product!
   deleteProduct(id: ID!): ID!
-  register(username: String!, password: String!): User
+  register(username: String!, password: String!, permission: String!): User
   login(username: String!, password: String!): User
 }
 
@@ -55,4 +55,10 @@ type User {
   username: String!
   password: String!
   token: String
+  permission: PermissionType
+}
+
+enum PermissionType {
+  ADMIN
+  BASIC
 }

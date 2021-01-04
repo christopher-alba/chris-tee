@@ -28,7 +28,6 @@ server.use(
     graphiql: true,
     context: () => {
       // get the user token from the headers
-      console.log(req.headers.authorization);
       const token = req.headers.authorization || '';
       // try to retrieve a user with the token
       const { payload: user, loggedIn } = getPayload(token);
