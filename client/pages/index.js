@@ -6,6 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { AUTHENTICATE } from '../ApolloClient/queries';
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles({
   homeLandingWrapper: {
@@ -66,6 +67,14 @@ const useStyles = makeStyles({
   shopLink: {
     textDecoration: 'none',
   },
+  landingButton: {
+    width: '200px',
+    color: 'white',
+    borderColor: 'white',
+    '&:hover': {
+      background: 'black',
+    },
+  },
 });
 
 const Homepage = () => {
@@ -87,6 +96,13 @@ const Homepage = () => {
           <p className={classes.homeLandingText}>
             Helping people of all sizes and genders find their style
           </p>
+          <Button
+            className={classes.landingButton}
+            variant="outlined"
+            href="#/shop"
+          >
+            View All Products
+          </Button>
         </Container>
       </Box>
       <Box className={classes.homeMenu}>
