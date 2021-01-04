@@ -136,6 +136,7 @@ const createProductDialog = ({
               },
               refetchQueries: [{ query: GET_PRODUCTS }],
             }).then(() => {
+              console.log('testing A');
               handleCreateProductClose();
             });
           }}
