@@ -82,7 +82,6 @@ const Homepage = () => {
   const classes = useStyles();
   let name = null;
   if (data) {
-    console.log(data);
     name = data.me.username;
   }
 
