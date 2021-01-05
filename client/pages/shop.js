@@ -444,7 +444,11 @@ const Shop = () => {
             <Box className={classes.productLabel}>
               <p>{product.name}</p>
               <p>NZD${product.price}</p>
-              <Button variant="outlined" className={classes.visitProduct}>
+              <Button
+                variant="outlined"
+                className={classes.visitProduct}
+                href={`#/product/${product.id}`}
+              >
                 Visit
               </Button>
             </Box>
