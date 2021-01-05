@@ -7,7 +7,7 @@ const {
 } = require('../../mongoose/db/product');
 const { register, login } = require('../../mongoose/db/auth');
 const { AuthenticationError } = require('apollo-server');
-const { createCart, updateCart } = require('../../mongoose/db/cart');
+const { createCart, updateCart, getCart } = require('../../mongoose/db/cart');
 exports.resolvers = {
   // Mutations
   createProduct: ({ product }) => {
@@ -25,6 +25,7 @@ exports.resolvers = {
   updateCart: (args) => {
     return updateCart(args);
   },
+  
   register: (args) => {
     return register(args).then((res) => {
       const token = res.token;
@@ -54,5 +55,8 @@ exports.resolvers = {
     } else {
       throw new AuthenticationError('Please Login Again!');
     }
+  },
+  cart: ({username}) => {
+    return getCart(username);
   },
 };

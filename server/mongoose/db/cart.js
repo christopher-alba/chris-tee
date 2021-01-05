@@ -22,10 +22,17 @@ const updateCart = async (args) => {
     { username: args.username },
     { products: args.products }
   );
-  return res;
+  const updatedCart = await Cart.findOne({ username: args.username });
+  return updatedCart;
+};
+
+const getCart = async (argsUsername) => {
+  const cart = await Cart.findOne({ username: argsUsername });
+  return cart;
 };
 
 module.exports = {
   createCart,
   updateCart,
+  getCart
 };

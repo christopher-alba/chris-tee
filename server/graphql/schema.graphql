@@ -2,7 +2,7 @@ type Query {
   product(id: ID!): Product!
   products: [Product!]!
   me: User
-  cart: Cart
+  cart(username: String!): Cart
 }
 type Mutation {
   createProduct(product: createProductInput!): Product!
