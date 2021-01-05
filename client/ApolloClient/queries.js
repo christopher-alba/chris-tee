@@ -28,6 +28,14 @@ export const GET_PRODUCT = gql`
   }
 `;
 
+export const GET_CART = gql`
+query GetCart($username: String!){
+  cart(username: $username){
+    products
+  }
+}
+`
+
 export const AUTHENTICATE = gql`
   query Authenticate {
     me {
