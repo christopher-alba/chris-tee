@@ -8,7 +8,11 @@ type Mutation {
   createProduct(product: createProductInput!): Product!
   updateProduct(product: updateProductInput!): Product!
   deleteProduct(id: ID!): ID!
-  register(username: String!, password: String!, permission: String!): User
+  register(
+    username: String!
+    password: String!
+    permission: PermissionType!
+  ): User
   login(username: String!, password: String!): User
   createCart(username: String!): Cart
   updateCart(products: [updateCartInput]!, username: String!): Cart

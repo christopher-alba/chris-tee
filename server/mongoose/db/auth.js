@@ -1,6 +1,8 @@
 const { User } = require('../models');
 const { getToken, encryptPassword, comparePassword } = require('../../util');
 const { AuthenticationError } = require('apollo-server');
+const { createCart } = require('./cart');
+
 const register = async (args) => {
   console.log(args);
   const newUser = {
@@ -17,6 +19,7 @@ const register = async (args) => {
     const user = new User({ ...newUser });
     const res = await user.save();
     const token = getToken(res);
+    await createCart(args.username);
     return { ...res, token };
   } catch (e) {
     throw e;
