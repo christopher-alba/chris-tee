@@ -7,6 +7,7 @@ const {
 } = require('../../mongoose/db/product');
 const { register, login } = require('../../mongoose/db/auth');
 const { AuthenticationError } = require('apollo-server');
+const { createCart } = require('../../mongoose/db/cart');
 exports.resolvers = {
   // Mutations
   createProduct: ({ product }) => {
@@ -17,6 +18,9 @@ exports.resolvers = {
   },
   deleteProduct: ({ id }) => {
     return deleteProduct(id);
+  },
+  createCart: ({ username }) => {
+    return createCart(username);
   },
   register: (args) => {
     return register(args).then((res) => {

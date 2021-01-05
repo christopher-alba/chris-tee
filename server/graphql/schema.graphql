@@ -2,6 +2,7 @@ type Query {
   product(id: ID!): Product!
   products: [Product!]!
   me: User
+  cart: Cart
 }
 type Mutation {
   createProduct(product: createProductInput!): Product!
@@ -9,6 +10,8 @@ type Mutation {
   deleteProduct(id: ID!): ID!
   register(username: String!, password: String!, permission: String!): User
   login(username: String!, password: String!): User
+  createCart(username: String!):Cart
+  updateCart(product: updateCartInput!):Cart
 }
 
 enum Orientation {
@@ -26,6 +29,12 @@ enum ClothingType {
   JACKET
   UNDERWEAR
 }
+
+type Cart {
+  products: [Product]
+  username: String!
+}
+
 type Product {
   id: ID!
   name: String!
@@ -51,8 +60,27 @@ input updateProductInput {
   price: Float!
   description: String!
   image: String!
-   orientation: Orientation!
+  orientation: Orientation!
   clothingType: ClothingType!
+}
+input updateCartInput {
+  name: String!
+  price: Float!
+  description: String!
+  image: String!
+  orientation: Orientation!
+  clothingType: ClothingType!
+  size: ClothingSizes!
+}
+
+enum ClothingSizes{
+  XS
+  S
+  M
+  L
+  XL
+  XXL
+  XXXL
 }
 
 type User {
