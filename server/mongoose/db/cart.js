@@ -1,11 +1,9 @@
 const { Cart, User } = require('../models');
 
 const createCart = async (argsUsername) => {
-  console.log(argsUsername);
   // check if cart already exists for the user
   const cart = await Cart.findOne({ username: argsUsername });
   const user = await User.findOne({ username: argsUsername });
-  console.log(cart);
   if (cart) {
     throw new Error('Cart already exists for the user');
   }
@@ -19,6 +17,15 @@ const createCart = async (argsUsername) => {
   };
 };
 
+const updateCart = async (args) => {
+  const res = await Cart.updateOne(
+    { username: args.username },
+    { products: args.products }
+  );
+  return res;
+};
+
 module.exports = {
   createCart,
+  updateCart,
 };

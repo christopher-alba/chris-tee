@@ -10,8 +10,8 @@ type Mutation {
   deleteProduct(id: ID!): ID!
   register(username: String!, password: String!, permission: String!): User
   login(username: String!, password: String!): User
-  createCart(username: String!):Cart
-  updateCart(product: updateCartInput!):Cart
+  createCart(username: String!): Cart
+  updateCart(products: [updateCartInput]!, username: String!): Cart
 }
 
 enum Orientation {
@@ -73,7 +73,7 @@ input updateCartInput {
   size: ClothingSizes!
 }
 
-enum ClothingSizes{
+enum ClothingSizes {
   XS
   S
   M
