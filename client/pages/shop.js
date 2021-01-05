@@ -60,19 +60,13 @@ const useStyles = makeStyles(() => ({
     marginBottom: '50px',
   },
   product: {
-    width: '300px',
-    height: '300px',
+    width: '270px',
     overflow: 'hidden',
     position: 'relative',
     marginTop: '10px',
+    padding: '15px',
   },
-  productLabel: {
-    position: 'absolute',
-    bottom: '0px',
-    background: 'rgba(255,255,255,0.7)',
-    width: '100%',
-    paddingLeft: '20px',
-  },
+  productLabel: {},
   pageSelectorWrapper: {
     marginTop: '20px',
     marginBottom: '20px',
@@ -94,14 +88,16 @@ const useStyles = makeStyles(() => ({
   },
   visitProduct: {
     position: 'absolute',
-    bottom: 10,
-    right: 30,
+    right: '15px',
+    bottom: '15px',
   },
   productImage: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    width: '270px',
+    margin: '0 auto',
+  },
+  productImageWrapper: {
+    height: '270px',
+    overflow: 'hidden',
   },
 }));
 
@@ -430,18 +426,20 @@ const Shop = () => {
               adminPermission ? setSelectedProduct(product.id) : '';
             }}
             style={{
-              border: product.id === selectedProduct ? '1px solid black' : '',
+              border: product.id === selectedProduct ? '3px solid black' : '',
             }}
           >
-            <img
-              src={product.image}
-              alt="product"
-              className={classes.productImage}
-              onError={(image) => {
-                image.target.src =
-                  'https://www.k3ma.com/wp-content/uploads/2017/04/default-image.jpg';
-              }}
-            />
+            <Box className={classes.productImageWrapper}>
+              <img
+                src={product.image}
+                alt="product"
+                className={classes.productImage}
+                onError={(image) => {
+                  image.target.src =
+                    'https://www.k3ma.com/wp-content/uploads/2017/04/default-image.jpg';
+                }}
+              />
+            </Box>
             <Box className={classes.productLabel}>
               <p>{product.name}</p>
               <p>NZD${product.price}</p>
