@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useQuery } from '@apollo/client';
-import { GET_PRODUCT, AUTHENTICATE } from '../ApolloClient/queries';
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_PRODUCT, AUTHENTICATE, GET_CART } from '../ApolloClient/queries';
+import { UPDATE_CART } from '../ApolloClient/mutations';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import EditProductDialog from '../components/editProductDialog';
@@ -30,8 +31,17 @@ const Product = () => {
       id: id,
     },
   });
+  const [updateCart] = useMutation(UPDATE_CART);
   const { loading: authLoading, error: authError, data: authData } = useQuery(
     AUTHENTICATE
+  );
+  const { loading: cartLoading, error: cartError, data: cartData } = useQuery(
+    GET_CART,
+    {
+      variables: {
+        username: (authData && authData.me.username) || '',
+      },
+    }
   );
 
   const [editProductOpen, setEditProductOpen] = useState(false);
@@ -39,7 +49,7 @@ const Product = () => {
   const handleEditProductClose = () => {
     setEditProductOpen(false);
   };
-  if (productLoading || authLoading) {
+  if (productLoading || authLoading || cartLoading) {
     return <div>Loading...</div>;
   }
 
@@ -78,7 +88,51 @@ const Product = () => {
             Edit Product
           </Button>
         )}
-        <Button variant="outlined">Add to Cart</Button>
+        <Button
+          variant="outlined"
+          onClick={async () => {
+            const cartProducts = [...cartData.cart.products];
+            const newCartProducts = cartProducts.map((product) => {
+              return {
+                name: product.name,
+                price: product.price,
+                description: product.description,
+                image: product.image,
+                orientation: product.orientation,
+                clothingType: product.clothingType,
+                size: product.size,
+              };
+            });
+            await updateCart({
+              variables: {
+                username: authData.me.username,
+                products: [
+                  ...newCartProducts,
+                  {
+                    name,
+                    image,
+                    description,
+                    price,
+                    orientation,
+                    clothingType,
+                    size: 'S',
+                  },
+                ],
+              },
+              refetchQueries: [
+                {
+                  query: GET_CART,
+                  variables: {
+                    username: authData.me.username,
+                  },
+                },
+              ],
+            });
+            location.assign('/#/cart');
+          }}
+        >
+          Add to Cart
+        </Button>
       </Container>
       <EditProductDialog
         handleEditProductClose={handleEditProductClose}

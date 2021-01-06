@@ -19,7 +19,7 @@ const createCart = async (argsUsername) => {
 
 const updateCart = async (args) => {
   let products = args.products;
-  if (args.products[0].name === undefined) {
+  if (args.products.length === 0) {
     products = [];
   }
   const res = await Cart.updateOne(
