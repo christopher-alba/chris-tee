@@ -22,7 +22,7 @@ const Cart = () => {
   if (authLoading || cartLoading) {
     return <div>Loading...</div>;
   }
-  console.log(cartData);
+  console.log(typeof authData.me.username);
   const { products } = cartData.cart;
   console.log(products);
   return (
@@ -38,6 +38,9 @@ const Cart = () => {
             refetchQueries: [
               {
                 query: GET_CART,
+                variables: {
+                  username: authData.me.username,
+                },
               },
             ],
           });

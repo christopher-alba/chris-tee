@@ -18,10 +18,13 @@ const createCart = async (argsUsername) => {
 };
 
 const updateCart = async (args) => {
-  console.log(args);
+  let products = args.products;
+  if (args.products[0].name === undefined) {
+    products = [];
+  }
   const res = await Cart.updateOne(
     { username: args.username },
-    { products: args.products }
+    { products: products }
   );
   const updatedCart = await Cart.findOne({ username: args.username });
   return updatedCart;
@@ -35,5 +38,5 @@ const getCart = async (argsUsername) => {
 module.exports = {
   createCart,
   updateCart,
-  getCart
+  getCart,
 };
