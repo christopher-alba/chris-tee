@@ -104,6 +104,7 @@ const Cart = () => {
           orientation,
           price,
           clothingType,
+          size,
         } = product;
         return (
           <Box
@@ -125,6 +126,7 @@ const Cart = () => {
             />
             <p>Orientation: {orientation}</p>
             <p>Clothing Type: {clothingType}</p>
+            <p>Size: {size}</p>
             <h2>NZD${price}</h2>
           </Box>
         );

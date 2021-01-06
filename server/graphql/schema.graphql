@@ -94,7 +94,10 @@ enum ClothingSizes {
   L
   XL
   XXL
-  XXXL
+  XL3
+  XL4
+  XL5
+  XL6
 }
 
 type User {

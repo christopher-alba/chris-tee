@@ -4,7 +4,11 @@ import { GET_PRODUCT, AUTHENTICATE, GET_CART } from '../ApolloClient/queries';
 import { UPDATE_CART } from '../ApolloClient/mutations';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
+import FormControl from '@material-ui/core/FormControl';
+import MenuItem from '@material-ui/core/MenuItem';
 import EditProductDialog from '../components/editProductDialog';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles({
@@ -17,6 +21,17 @@ const useStyles = makeStyles({
   },
   editProductButton: {
     marginRight: '20px',
+    height: '56px',
+  },
+  filterWrapper: {
+    marginRight: '20px',
+    width: '100px',
+  },
+  filterLabel: {
+    background: 'white',
+  },
+  addToCartButton: {
+    height: '56px',
   },
 });
 const Product = () => {
@@ -45,9 +60,13 @@ const Product = () => {
   );
 
   const [editProductOpen, setEditProductOpen] = useState(false);
+  const [sizeFilter, setSizeFilter] = useState('');
 
   const handleEditProductClose = () => {
     setEditProductOpen(false);
+  };
+  const handleSizeFilterChange = (evt) => {
+    setSizeFilter(evt.target.value);
   };
   if (productLoading || authLoading || cartLoading) {
     return <div>Loading...</div>;
@@ -88,8 +107,33 @@ const Product = () => {
             Edit Product
           </Button>
         )}
+        <FormControl variant="outlined" className={classes.filterWrapper}>
+          <InputLabel id="size" className={classes.filterLabel}>
+            size
+          </InputLabel>
+          <Select
+            className={classes.filter}
+            labelId="size"
+            id="size"
+            value={sizeFilter}
+            onChange={handleSizeFilterChange}
+          >
+            <MenuItem value="">none</MenuItem>
+            <MenuItem value="XS">XS</MenuItem>
+            <MenuItem value="S">S</MenuItem>
+            <MenuItem value="M">M</MenuItem>
+            <MenuItem value="L">L</MenuItem>
+            <MenuItem value="XL">XL</MenuItem>
+            <MenuItem value="XXL">XXL</MenuItem>
+            <MenuItem value="XL3">3XL</MenuItem>
+            <MenuItem value="XL4">4XL</MenuItem>
+            <MenuItem value="XL5">5XL</MenuItem>
+            <MenuItem value="XL6">6XL</MenuItem>
+          </Select>
+        </FormControl>
         <Button
           variant="outlined"
+          className={classes.addToCartButton}
           onClick={async () => {
             const cartProducts = [...cartData.cart.products];
             const newCartProducts = cartProducts.map((product) => {
@@ -115,7 +159,7 @@ const Product = () => {
                     price,
                     orientation,
                     clothingType,
-                    size: 'S',
+                    size: sizeFilter,
                   },
                 ],
               },
