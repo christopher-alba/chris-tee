@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { AUTHENTICATE, GET_CART } from '../ApolloClient/queries';
 import { UPDATE_CART } from '../ApolloClient/mutations';
@@ -18,36 +18,83 @@ const Cart = () => {
     }
   );
 
+  const [selectedProduct, setSelectedProduct] = useState('');
   const [updateCart] = useMutation(UPDATE_CART);
   if (authLoading || cartLoading) {
     return <div>Loading...</div>;
   }
-  console.log(typeof authData.me.username);
   const { products } = cartData.cart;
-  console.log(products);
   return (
     <Box>
       <h1>Welcome to your Cart {authData.me.username}</h1>
-      <Button
-        onClick={() => {
-          updateCart({
-            variables: {
-              username: authData.me.username,
-              products: [],
-            },
-            refetchQueries: [
-              {
-                query: GET_CART,
+      {products.length > 0 && (
+        <Button
+          onClick={() => {
+            updateCart({
+              variables: {
+                username: authData.me.username,
+                products: [],
+              },
+              refetchQueries: [
+                {
+                  query: GET_CART,
+                  variables: {
+                    username: authData.me.username,
+                  },
+                },
+              ],
+            });
+          }}
+        >
+          Clear your cart
+        </Button>
+      )}
+      {selectedProduct && (
+        <>
+          <Button
+            onClick={() => {
+              setSelectedProduct('');
+            }}
+          >
+            Deselect product
+          </Button>
+          <Button
+            onClick={() => {
+              const updatedProducts = products.filter((product) => {
+                return product.id !== selectedProduct;
+              });
+              const newCartProducts = updatedProducts.map((product) => {
+                return {
+                  name: product.name,
+                  price: product.price,
+                  description: product.description,
+                  image: product.image,
+                  orientation: product.orientation,
+                  clothingType: product.clothingType,
+                  size: product.size,
+                };
+              });
+              updateCart({
                 variables: {
                   username: authData.me.username,
+                  products: [...newCartProducts],
                 },
-              },
-            ],
-          });
-        }}
-      >
-        Clear your cart
-      </Button>
+                refetchQueries: [
+                  {
+                    query: GET_CART,
+                    variables: {
+                      username: authData.me.username,
+                    },
+                  },
+                ],
+              });
+              setSelectedProduct('');
+            }}
+          >
+            remove from cart
+          </Button>
+        </>
+      )}
       {products.map((product) => {
         const {
           id,
@@ -59,7 +106,13 @@ const Cart = () => {
           clothingType,
         } = product;
         return (
-          <Box key={id}>
+          <Box
+            key={id}
+            onClick={() => {
+              setSelectedProduct(id);
+            }}
+            style={{ border: selectedProduct === id ? '3px solid black' : '' }}
+          >
             <h2>{name}</h2>
             <p>{description}</p>
             <img
