@@ -18,6 +18,7 @@ const createCart = async (argsUsername) => {
 };
 
 const updateCart = async (args) => {
+  console.log(args);
   const res = await Cart.updateOne(
     { username: args.username },
     { products: args.products }

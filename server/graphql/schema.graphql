@@ -35,7 +35,7 @@ enum ClothingType {
 }
 
 type Cart {
-  products: [Product]
+  products: [CartProduct]!
   username: String!
 }
 
@@ -49,6 +49,16 @@ type Product {
   clothingType: ClothingType!
 }
 
+type CartProduct {
+  id: ID!
+  name: String!
+  price: Float!
+  description: String!
+  image: String!
+  orientation: Orientation!
+  clothingType: ClothingType!
+  size: ClothingSizes!
+}
 input createProductInput {
   name: String!
   price: Float!
@@ -68,13 +78,13 @@ input updateProductInput {
   clothingType: ClothingType!
 }
 input updateCartInput {
-  name: String!
-  price: Float!
-  description: String!
-  image: String!
-  orientation: Orientation!
-  clothingType: ClothingType!
-  size: ClothingSizes!
+  name: String
+  price: Float
+  description: String
+  image: String
+  orientation: Orientation
+  clothingType: ClothingType
+  size: ClothingSizes
 }
 
 enum ClothingSizes {

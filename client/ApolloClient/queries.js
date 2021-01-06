@@ -29,12 +29,21 @@ export const GET_PRODUCT = gql`
 `;
 
 export const GET_CART = gql`
-query GetCart($username: String!){
-  cart(username: $username){
-    products
+  query GetCart($username: String!) {
+    cart(username: $username) {
+      products {
+        id
+        name
+        price
+        description
+        image
+        orientation
+        clothingType
+        size
+      }
+    }
   }
-}
-`
+`;
 
 export const AUTHENTICATE = gql`
   query Authenticate {

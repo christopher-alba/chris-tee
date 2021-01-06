@@ -64,26 +64,32 @@ export const EDIT_PRODUCT = gql`
 
 export const UPDATE_CART = gql`
   mutation UpdateCart(
-    $name: String!
-    $price: Float!
-    $description: String!
-    $image: String!
-    $orientation: Orientation!
-    $clothingType: ClothingType!
+    $name: String
+    $price: Float
+    $description: String
+    $image: String
+    $orientation: Orientation
+    $clothingType: ClothingType
     $username: String!
+    $size: ClothingSizes
   ) {
     updateCart(
       username: $username
-      products: [{
-        name: $name
-        price: $price
-        description: $description
-        image: $image
-        orientation: $orientation
-        clothingType: $clothingType
-      }]
+      products: [
+        {
+          name: $name
+          price: $price
+          description: $description
+          image: $image
+          orientation: $orientation
+          clothingType: $clothingType
+          size: $size
+        }
+      ]
     ) {
-      products
+      products {
+        id
+      }
     }
   }
 `;
