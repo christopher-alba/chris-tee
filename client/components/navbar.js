@@ -15,7 +15,7 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
 import { useLocation } from 'react-router-dom';
-import { AUTHENTICATE } from '../ApolloClient/queries';
+import { AUTHENTICATE, GET_CART } from '../ApolloClient/queries';
 import { useQuery } from '@apollo/client';
 
 const useStyles = makeStyles({
@@ -85,9 +85,22 @@ HideOnScroll.propTypes = {
 };
 
 const Navbar = () => {
-  const { loading, error, data } = useQuery(AUTHENTICATE);
+  const { loading, error, data: authData } = useQuery(AUTHENTICATE);
+  const { loading: cartLoading, error: cartError, data: cartData } = useQuery(
+    GET_CART,
+    {
+      variables: {
+        username: (authData && authData.me.username) || '',
+      },
+    }
+  );
+
   const classes = useStyles();
   const location = useLocation();
+  if (cartLoading || loading) {
+    return <div>...loading</div>;
+  }
+  const numberOfCartItems = cartData.cart.products.length;
   return (
     <HideOnScroll>
       <AppBar className={classes.mainNav} position="sticky">
@@ -152,7 +165,7 @@ const Navbar = () => {
                 }
                 href="#/cart"
               >
-                <Badge badgeContent={4} color="primary">
+                <Badge badgeContent={numberOfCartItems} color="primary">
                   <ShoppingCartIcon />
                 </Badge>
               </IconButton>
@@ -167,12 +180,12 @@ const Navbar = () => {
               >
                 Signup
               </Button>
-              {data ? (
+              {authData ? (
                 <Button
                   color="inherit"
-                  onClick = {() => {
-                    localStorage.removeItem('authorization')
-                    window.location.reload()
+                  onClick={() => {
+                    localStorage.removeItem('authorization');
+                    window.location.reload();
                   }}
                 >
                   Logout
