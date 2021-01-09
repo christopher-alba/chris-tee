@@ -100,7 +100,7 @@ const Navbar = () => {
   if (cartLoading || loading) {
     return <div>...loading</div>;
   }
-  const numberOfCartItems = cartData.cart.products.length;
+  const numberOfCartItems = cartData.cart && cartData.cart.products.length || 0;
   return (
     <HideOnScroll>
       <AppBar className={classes.mainNav} position="sticky">

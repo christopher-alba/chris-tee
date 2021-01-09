@@ -131,52 +131,54 @@ const Product = () => {
             <MenuItem value="XL6">6XL</MenuItem>
           </Select>
         </FormControl>
-        <Button
-          variant="outlined"
-          className={classes.addToCartButton}
-          onClick={async () => {
-            const cartProducts = [...cartData.cart.products];
-            const newCartProducts = cartProducts.map((product) => {
-              return {
-                name: product.name,
-                price: product.price,
-                description: product.description,
-                image: product.image,
-                orientation: product.orientation,
-                clothingType: product.clothingType,
-                size: product.size,
-              };
-            });
-            await updateCart({
-              variables: {
-                username: authData.me.username,
-                products: [
-                  ...newCartProducts,
+        {authData ? (
+          <Button
+            variant="outlined"
+            className={classes.addToCartButton}
+            onClick={async () => {
+              const cartProducts = [...cartData.cart.products];
+              const newCartProducts = cartProducts.map((product) => {
+                return {
+                  name: product.name,
+                  price: product.price,
+                  description: product.description,
+                  image: product.image,
+                  orientation: product.orientation,
+                  clothingType: product.clothingType,
+                  size: product.size,
+                };
+              });
+              await updateCart({
+                variables: {
+                  username: authData.me.username,
+                  products: [
+                    ...newCartProducts,
+                    {
+                      name,
+                      image,
+                      description,
+                      price,
+                      orientation,
+                      clothingType,
+                      size: sizeFilter,
+                    },
+                  ],
+                },
+                refetchQueries: [
                   {
-                    name,
-                    image,
-                    description,
-                    price,
-                    orientation,
-                    clothingType,
-                    size: sizeFilter,
+                    query: GET_CART,
+                    variables: {
+                      username: authData.me.username,
+                    },
                   },
                 ],
-              },
-              refetchQueries: [
-                {
-                  query: GET_CART,
-                  variables: {
-                    username: authData.me.username,
-                  },
-                },
-              ],
-            });
-            location.assign('/#/cart');
-          }}
-        >
-          Add to Cart
-        </Button>
+              });
+              location.assign('/#/cart');
+            }}
+          >
+            Add to Cart
+          </Button>
+        ): <p>You must be logged in to add items to your cart.</p>}
       </Container>
       <EditProductDialog
         handleEditProductClose={handleEditProductClose}

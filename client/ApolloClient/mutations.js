@@ -7,6 +7,22 @@ export const LOGIN = gql`
     }
   }
 `;
+
+export const REGISTER = gql`
+  mutation Register(
+    $username: String!
+    $password: String!
+    $permission: PermissionType!
+  ) {
+    register(
+      username: $username
+      password: $password
+      permission: $permission
+    ) {
+      token
+    }
+  }
+`;
 export const DELETE_PRODUCT = gql`
   mutation DeleteProduct($id: ID!) {
     deleteProduct(id: $id)
