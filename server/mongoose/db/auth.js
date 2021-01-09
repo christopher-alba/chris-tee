@@ -4,7 +4,6 @@ const { AuthenticationError } = require('apollo-server');
 const { createCart } = require('./cart');
 
 const register = async (args) => {
-  console.log(args);
   const newUser = {
     username: args.username,
     password: await encryptPassword(args.password),
