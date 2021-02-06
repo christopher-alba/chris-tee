@@ -36,7 +36,7 @@ const CreateProductDialog = ({
   const classes = useStyles();
   const [createProduct] = useMutation(CREATE_PRODUCT);
 
-  const { values, touched, errors, handleSubmit, handleChange } = useFormik({
+  const { values, touched, errors, handleChange, handleBlur } = useFormik({
     validateOnMount: true,
     initialValues: {
       name: '',
@@ -67,14 +67,18 @@ const CreateProductDialog = ({
         Create a new product
       </DialogTitle>
       <form className={classes.createProductForm}>
+        {Boolean(touched.name && errors.name) && <div>{errors.name}</div>}
         <TextField
           name="name"
           label="name"
           variant="outlined"
           className={classes.createProductFormInput}
+          onBlur={handleBlur}
           onChange={handleChange}
           value={values.name}
+          error={Boolean(touched.name && errors.name)}
         />
+        {Boolean(touched.price && errors.price) && <div>{errors.price}</div>}
         <TextField
           name="price"
           label="price"
@@ -83,7 +87,12 @@ const CreateProductDialog = ({
           type="number"
           onChange={handleChange}
           value={values.price}
+          onBlur={handleBlur}
+          error={Boolean(touched.price && errors.price)}
         />
+        {Boolean(touched.description && errors.description) && (
+          <div>{errors.description}</div>
+        )}
         <TextField
           name="description"
           label="description"
@@ -94,7 +103,12 @@ const CreateProductDialog = ({
           className={classes.createProductFormInput}
           onChange={handleChange}
           value={values.description}
+          onBlur={handleBlur}
+          error={Boolean(touched.description && errors.description)}
         />
+        {Boolean(touched.imageUrl && errors.imageUrl) && (
+          <div>{errors.imageUrl}</div>
+        )}
         <TextField
           name="imageUrl"
           label="image url"
@@ -102,7 +116,12 @@ const CreateProductDialog = ({
           className={classes.createProductFormInput}
           onChange={handleChange}
           value={values.imageUrl}
+          onBlur={handleBlur}
+          error={Boolean(touched.imageUrl && errors.imageUrl)}
         />
+        {Boolean(touched.clothingType && errors.clothingType) && (
+          <div>{errors.clothingType}</div>
+        )}
         <FormControl variant="outlined" className={classes.filterWrapper}>
           <InputLabel id="clothing-type" className={classes.filterLabel}>
             Clothing type
@@ -115,6 +134,8 @@ const CreateProductDialog = ({
             className={classes.createProductFormInput}
             onChange={handleChange}
             value={values.clothingType}
+            onBlur={handleBlur}
+            error={Boolean(touched.clothingType && errors.clothingType)}
           >
             <MenuItem value="tshirt">t-shirts</MenuItem>
             <MenuItem value="shorts">shorts</MenuItem>
@@ -123,6 +144,9 @@ const CreateProductDialog = ({
             <MenuItem value="underwear">underwear</MenuItem>
           </Select>
         </FormControl>
+        {Boolean(touched.orientation && errors.orientation) && (
+          <div>{errors.orientation}</div>
+        )}
         <FormControl variant="outlined" className={classes.filterWrapper}>
           <InputLabel id="orientation" className={classes.filterLabel}>
             Orientation
@@ -134,6 +158,8 @@ const CreateProductDialog = ({
             value={values.orientation}
             className={classes.createProductFormInput}
             onChange={handleChange}
+            onBlur={handleBlur}
+            error={Boolean(touched.orientation && errors.orientation)}
           >
             <MenuItem value="feminine">feminine</MenuItem>
             <MenuItem value="masculine">masculine</MenuItem>
@@ -157,6 +183,7 @@ const CreateProductDialog = ({
               handleCreateProductClose();
             });
           }}
+          type="submit"
         >
           Create
         </Button>
