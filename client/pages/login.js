@@ -39,15 +39,15 @@ const Login = () => {
     setPassword(evt.target.value);
   };
   const handleLogin = () => {
-    login({
-      variables: {
-        username: username,
-        password: password,
-      },
-    }).then((res) => {
-      localStorage.setItem('authorization', res.data.login.token);
-      location.assign('/#/');
-    });
+      login({
+        variables: {
+          username: username,
+          password: password,
+        },
+      }).then((res) => {
+        localStorage.setItem('authorization', res.data.login.token);
+        location.assign('/#/');
+      });  
   };
   return (
     <Box className={classes.loginPageWrapper}>

@@ -11,6 +11,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { useMutation } from '@apollo/client';
 import { GET_PRODUCTS } from '../ApolloClient/queries';
 import { CREATE_PRODUCT } from '../ApolloClient/mutations';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 const useStyles = makeStyles({
   createProductForm: {
@@ -32,13 +34,30 @@ const CreateProductDialog = ({
   createProductOpen,
 }) => {
   const classes = useStyles();
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState(0);
-  const [description, setDescription] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
-  const [clothingType, setClothingType] = useState('');
-  const [orientation, setOrientation] = useState('');
   const [createProduct] = useMutation(CREATE_PRODUCT);
+
+  const { values, touched, errors, handleSubmit, handleChange } = useFormik({
+    validateOnMount: true,
+    initialValues: {
+      name: '',
+      price: null,
+      description: '',
+      imageUrl: '',
+      clothingType: '',
+      orientation: '',
+    },
+    validationSchema: Yup.object({
+      name: Yup.string().required('Name is required'),
+      price: Yup.number()
+        .required('Price is required')
+        .typeError('Price must be a valid number'),
+      description: Yup.string().required('Description is required'),
+      imageUrl: Yup.string().required('Image URL is required'),
+      clothingType: Yup.string().required('Clothing type is required'),
+      orientation: Yup.string().required('Orientation is required'),
+    }),
+  });
+
   return (
     <Dialog onClose={handleCreateProductClose} open={createProductOpen}>
       <DialogTitle
@@ -49,53 +68,53 @@ const CreateProductDialog = ({
       </DialogTitle>
       <form className={classes.createProductForm}>
         <TextField
+          name="name"
           label="name"
           variant="outlined"
           className={classes.createProductFormInput}
-          onChange={(evt) => {
-            setName(evt.target.value);
-          }}
+          onChange={handleChange}
+          value={values.name}
         />
         <TextField
+          name="price"
           label="price"
           variant="outlined"
           className={classes.createProductFormInput}
           type="number"
-          onChange={(evt) => {
-            setPrice(evt.target.value);
-          }}
+          onChange={handleChange}
+          value={values.price}
         />
         <TextField
+          name="description"
           label="description"
           multiline={true}
           rowsMax={4}
           rows={4}
           variant="outlined"
           className={classes.createProductFormInput}
-          onChange={(evt) => {
-            setDescription(evt.target.value);
-          }}
+          onChange={handleChange}
+          value={values.description}
         />
         <TextField
+          name="imageUrl"
           label="image url"
           variant="outlined"
           className={classes.createProductFormInput}
-          onChange={(evt) => {
-            setImageUrl(evt.target.value);
-          }}
+          onChange={handleChange}
+          value={values.imageUrl}
         />
         <FormControl variant="outlined" className={classes.filterWrapper}>
           <InputLabel id="clothing-type" className={classes.filterLabel}>
             Clothing type
           </InputLabel>
           <Select
+            name="clothingType"
             labelId="clothing-type"
             id="clothing-type"
-            value={clothingType}
+            value={values.clothingType}
             className={classes.createProductFormInput}
-            onChange={(evt) => {
-              setClothingType(evt.target.value);
-            }}
+            onChange={handleChange}
+            value={values.clothingType}
           >
             <MenuItem value="tshirt">t-shirts</MenuItem>
             <MenuItem value="shorts">shorts</MenuItem>
@@ -109,13 +128,12 @@ const CreateProductDialog = ({
             Orientation
           </InputLabel>
           <Select
+            name="orientation"
             labelId="orientation"
             id="orientation"
-            value={orientation}
+            value={values.orientation}
             className={classes.createProductFormInput}
-            onChange={(evt) => {
-              setOrientation(evt.target.value);
-            }}
+            onChange={handleChange}
           >
             <MenuItem value="feminine">feminine</MenuItem>
             <MenuItem value="masculine">masculine</MenuItem>
@@ -127,16 +145,15 @@ const CreateProductDialog = ({
           onClick={() => {
             createProduct({
               variables: {
-                name: name,
-                price: Number(price),
-                description: description,
-                orientation: orientation.toUpperCase(),
-                clothingType: clothingType.toUpperCase(),
-                image: imageUrl,
+                name: values.name,
+                price: Number(values.price),
+                description: values.description,
+                orientation: values.orientation.toUpperCase(),
+                clothingType: values.clothingType.toUpperCase(),
+                image: values.imageUrl,
               },
               refetchQueries: [{ query: GET_PRODUCTS }],
             }).then(() => {
-              
               handleCreateProductClose();
             });
           }}
