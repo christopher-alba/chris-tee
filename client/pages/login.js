@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -49,6 +49,9 @@ const Login = () => {
       location.assign('/#/');
     });
   };
+  useEffect(() => {
+    location.assign('/?#/login');
+  },[location.href])
   return (
     <Box className={classes.loginPageWrapper}>
       <form className={classes.loginFormWrapper}>

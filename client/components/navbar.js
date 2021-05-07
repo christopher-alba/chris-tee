@@ -176,7 +176,7 @@ const Navbar = () => {
                     : ''
                 }
                 color="inherit"
-                href="#/signup"
+                href="?#/signup"
               >
                 Signup
               </Button>
@@ -198,7 +198,7 @@ const Navbar = () => {
                       : ''
                   }
                   color="inherit"
-                  href="#/login"
+                  href="?#/login"
                 >
                   Login
                 </Button>
