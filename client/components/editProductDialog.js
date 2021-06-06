@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { makeStyles } from "@material-ui/core";
+import { Box, makeStyles } from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "../components/dialogTitle";
 import TextField from "@material-ui/core/TextField";
@@ -101,12 +101,33 @@ const EditProductDialog = ({ handleEditProductClose, editProductOpen, id }) => {
         <Box className="editFileDisplayArea"></Box>
         <TextField
           type="file"
-          value={imageUrl}
-          label="image url"
           variant="outlined"
           className={classes.editProductFormInput}
           onChange={(evt) => {
-            setImageUrl(evt.target.value);
+            const file = evt.target.files[0];
+
+            var imageType = /image.*/;
+
+            const fileDisplayArea =
+              document.getElementsByClassName("editFileDisplayArea")[0];
+            if (file.type.match(imageType)) {
+              var reader = new FileReader();
+              reader.onload = function (e) {
+                fileDisplayArea.innerHTML = "";
+
+                // Create a new image.
+                var img = new Image();
+                // Set the img src property using the data URL.
+                img.src = reader.result;
+                setImageUrl(reader.result);
+                // Add the image to the page.
+                fileDisplayArea.appendChild(img);
+              };
+
+              reader.readAsDataURL(file);
+            } else {
+              fileDisplayArea.innerHTML = "File not supported!";
+            }
           }}
         />
         <FormControl variant="outlined" className={classes.filterWrapper}>
