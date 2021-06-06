@@ -1,17 +1,17 @@
-const server = require('./server');
-const cors = require('cors');
-const { graphqlHTTP } = require('express-graphql');
-const { gql } = require('@apollo/client');
-const { resolve } = require('path');
-const { makeExecutableSchema } = require('graphql-tools');
-const { readFileSync } = require('fs');
-const { resolvers } = require('./graphql/resolvers/resolvers');
-const {getPayload} = require('./util')
-require('./mongoose/connect');
+const server = require("./server");
+const cors = require("cors");
+const { graphqlHTTP } = require("express-graphql");
+const { gql } = require("@apollo/client");
+const { resolve } = require("path");
+const { makeExecutableSchema } = require("graphql-tools");
+const { readFileSync } = require("fs");
+const { resolvers } = require("./graphql/resolvers/resolvers");
+const { getPayload } = require("./util");
+require("./mongoose/connect");
 
 const typeDefs = gql(
-  readFileSync(resolve('./server/graphql/schema.graphql'), {
-    encoding: 'utf8',
+  readFileSync(resolve("./server/graphql/schema.graphql"), {
+    encoding: "utf8",
   })
 );
 
@@ -21,14 +21,14 @@ const schema = makeExecutableSchema({
 
 server.use(cors());
 server.use(
-  '/graphql',
+  "/graphql",
   graphqlHTTP((req) => ({
     schema,
     rootValue: resolvers,
     graphiql: true,
     context: () => {
       // get the user token from the headers
-      const token = req.headers.authorization || '';
+      const token = req.headers.authorization || "";
       // try to retrieve a user with the token
       const { payload: user, loggedIn } = getPayload(token);
       // add the user to the context

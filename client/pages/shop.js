@@ -13,6 +13,8 @@ import { useLocation } from "react-router-dom";
 import { DELETE_PRODUCT } from "../ApolloClient/mutations";
 import CreateProductDialog from "../components/createProductDialog";
 import EditProductDialog from "../components/editProductDialog";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+
 import { connect } from "react-redux";
 
 const useStyles = makeStyles(() => ({
@@ -24,8 +26,16 @@ const useStyles = makeStyles(() => ({
     border: "1px solid lightgray",
     borderRadius: "0.5rem",
   },
+  filterContainerWrapperMobile: {
+    display: "flex",
+    flexDirection: "column",
+  },
   filter: {
     width: "150px",
+  },
+  filterMobile: {
+    width: "150px",
+    marginBottom: "20px",
   },
   filterTitle: {
     marginRight: "100px",
@@ -49,6 +59,16 @@ const useStyles = makeStyles(() => ({
     padding: "0 20px 0 20px",
     background: "black",
     marginLeft: "auto",
+    color: "white",
+    "&:hover": {
+      background: "#2e2e2e",
+    },
+  },
+  setFilterButtonMobile: {
+    height: "56px",
+    padding: "0 20px 0 20px",
+    width: "150px",
+    background: "black",
     color: "white",
     "&:hover": {
       background: "#2e2e2e",
@@ -104,6 +124,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Shop = (props) => {
+  const matches = useMediaQuery("(min-width:1100px)");
   let categoryTitle = "ALL";
   const searchParams = useLocation().search;
   const classes = useStyles();
@@ -277,7 +298,14 @@ const Shop = (props) => {
       <h2 className={classes.shopSubTitle}>
         BROWSING {categoryTitle} PRODUCTS
       </h2>
-      <Box className={classes.filterContainerWrapper}>
+
+      <Box
+        className={
+          !matches
+            ? classes.filterContainerWrapperMobile
+            : classes.filterContainerWrapper
+        }
+      >
         <h2 className={classes.filterTitle}>FILTERS</h2>
         <FormControl variant="outlined" className={classes.filterWrapper}>
           <InputLabel id="basic" className={classes.filterLabel}>
@@ -285,7 +313,7 @@ const Shop = (props) => {
           </InputLabel>
           <Select
             value={basicFilter}
-            className={classes.filter}
+            className={matches ? classes.filter : classes.filterMobile}
             labelId="basic"
             id="basic"
             onChange={handleBasicFilterChange}
@@ -302,7 +330,7 @@ const Shop = (props) => {
             Clothing type
           </InputLabel>
           <Select
-            className={classes.filter}
+            className={matches ? classes.filter : classes.filterMobile}
             labelId="clothing-type"
             id="clothing-type"
             value={clothingTypeFilter}
@@ -321,7 +349,7 @@ const Shop = (props) => {
             Orientation
           </InputLabel>
           <Select
-            className={classes.filter}
+            className={matches ? classes.filter : classes.filterMobile}
             labelId="orientation"
             id="orientation"
             value={orientationFilter}
@@ -335,7 +363,9 @@ const Shop = (props) => {
         </FormControl>
         <Button
           variant="outlined"
-          className={classes.setFilterButton}
+          className={
+            !matches ? classes.setFilterButtonMobile : classes.setFilterButton
+          }
           onClick={() => {
             location.replace("#/shop");
             handleSetFiltersClick();
@@ -347,6 +377,7 @@ const Shop = (props) => {
           Set Filters
         </Button>
       </Box>
+
       <Box className={classes.pageSelectorWrapper}>
         <Button
           variant="outlined"
