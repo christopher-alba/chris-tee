@@ -1,62 +1,64 @@
-import React from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core';
-import Container from '@material-ui/core/Container';
-import Box from '@material-ui/core/Box';
-import useScrollTrigger from '@material-ui/core/useScrollTrigger';
-import Slide from '@material-ui/core/Slide';
-import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
-import SearchIcon from '@material-ui/icons/Search';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
-import { useLocation } from 'react-router-dom';
-import { AUTHENTICATE, GET_CART } from '../ApolloClient/queries';
-import { useQuery } from '@apollo/client';
+import React, { useEffect, useState } from "react";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
+import { makeStyles } from "@material-ui/core";
+import Container from "@material-ui/core/Container";
+import Box from "@material-ui/core/Box";
+import useScrollTrigger from "@material-ui/core/useScrollTrigger";
+import Slide from "@material-ui/core/Slide";
+import PropTypes from "prop-types";
+import TextField from "@material-ui/core/TextField";
+import SearchIcon from "@material-ui/icons/Search";
+import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import IconButton from "@material-ui/core/IconButton";
+import Badge from "@material-ui/core/Badge";
+import { useLocation } from "react-router-dom";
+import { AUTHENTICATE, GET_CART } from "../ApolloClient/queries";
+import { useQuery } from "@apollo/client";
+import { connect } from "react-redux";
+import { updateSearchString } from "../redux/actions";
 
 const useStyles = makeStyles({
   mainNav: {
-    background: 'white',
-    color: 'black',
+    background: "white",
+    color: "black",
   },
   toolbar: {
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     padding: 0,
   },
   navLeft: {
-    display: 'flex',
-    width: '600px',
+    display: "flex",
+    width: "600px",
   },
   navRight: {
-    display: 'Flex',
-    alignItems: 'center',
-    width: '100%',
-    margin: '10px',
+    display: "Flex",
+    alignItems: "center",
+    width: "100%",
+    margin: "10px",
   },
   inputContainer: {
-    width: '70%',
-    margin: '0 auto',
-    display: 'flex',
-    alignItems: 'center',
-    position: 'relative',
+    width: "70%",
+    margin: "0 auto",
+    display: "flex",
+    alignItems: "center",
+    position: "relative",
   },
   input: {
-    width: '80%',
+    width: "80%",
   },
   inputContainerButton: {
-    width: '10%',
-    height: '56px',
-    marginLeft: '10px',
+    width: "10%",
+    height: "56px",
+    marginLeft: "10px",
   },
   navbarBrand: {
     letterSpacing: 5,
   },
   navlinkHighlighted: {
-    borderBottom: '1px solid black',
+    borderBottom: "1px solid black",
     borderRadius: 0,
   },
 });
@@ -84,23 +86,26 @@ HideOnScroll.propTypes = {
   window: PropTypes.func,
 };
 
-const Navbar = () => {
+const Navbar = (props) => {
   const { loading, error, data: authData } = useQuery(AUTHENTICATE);
-  const { loading: cartLoading, error: cartError, data: cartData } = useQuery(
-    GET_CART,
-    {
-      variables: {
-        username: (authData && authData.me.username) || '',
-      },
-    }
-  );
+  const {
+    loading: cartLoading,
+    error: cartError,
+    data: cartData,
+  } = useQuery(GET_CART, {
+    variables: {
+      username: (authData && authData.me.username) || "",
+    },
+  });
 
+  const [searchString, setSearchString] = useState("");
   const classes = useStyles();
   const location = useLocation();
   if (cartLoading || loading) {
     return <div>...loading</div>;
   }
-  const numberOfCartItems = cartData.cart && cartData.cart.products.length || 0;
+  const numberOfCartItems =
+    (cartData.cart && cartData.cart.products.length) || 0;
   return (
     <HideOnScroll>
       <AppBar className={classes.mainNav} position="sticky">
@@ -112,9 +117,9 @@ const Navbar = () => {
               </Typography>
               <Button
                 className={
-                  location.pathname === '/' ? classes.navlinkHighlighted : ''
+                  location.pathname === "/" ? classes.navlinkHighlighted : ""
                 }
-                style={{ marginLeft: '50px' }}
+                style={{ marginLeft: "50px" }}
                 color="inherit"
                 href="#/"
               >
@@ -122,9 +127,9 @@ const Navbar = () => {
               </Button>
               <Button
                 className={
-                  location.pathname === '/shop'
+                  location.pathname === "/shop"
                     ? classes.navlinkHighlighted
-                    : ''
+                    : ""
                 }
                 color="inherit"
                 href="#/shop"
@@ -133,9 +138,9 @@ const Navbar = () => {
               </Button>
               <Button
                 className={
-                  location.pathname === '/about'
+                  location.pathname === "/about"
                     ? classes.navlinkHighlighted
-                    : ''
+                    : ""
                 }
                 color="inherit"
                 href="#/about"
@@ -149,19 +154,26 @@ const Navbar = () => {
                   className={classes.input}
                   label="Search for your item"
                   variant="outlined"
+                  onChange={(evt) => {
+                    setSearchString(evt.target.value);
+                    props.updateSearchString(evt.target.value);
+                  }}
                 />
                 <Button
                   className={classes.inputContainerButton}
                   variant="outlined"
+                  onClick={() => {
+                    window.location.replace("#/shop");
+                  }}
                 >
                   <SearchIcon />
                 </Button>
               </Box>
               <IconButton
                 className={
-                  location.pathname === '/cart'
+                  location.pathname === "/cart"
                     ? classes.navlinkHighlighted
-                    : ''
+                    : ""
                 }
                 href="#/cart"
               >
@@ -171,9 +183,9 @@ const Navbar = () => {
               </IconButton>
               <Button
                 className={
-                  location.pathname === '/signup'
+                  location.pathname === "/signup"
                     ? classes.navlinkHighlighted
-                    : ''
+                    : ""
                 }
                 color="inherit"
                 href="?#/signup"
@@ -184,7 +196,7 @@ const Navbar = () => {
                 <Button
                   color="inherit"
                   onClick={() => {
-                    localStorage.removeItem('authorization');
+                    localStorage.removeItem("authorization");
                     window.location.reload();
                   }}
                 >
@@ -193,9 +205,9 @@ const Navbar = () => {
               ) : (
                 <Button
                   className={
-                    location.pathname === '/login'
+                    location.pathname === "/login"
                       ? classes.navlinkHighlighted
-                      : ''
+                      : ""
                   }
                   color="inherit"
                   href="?#/login"
@@ -211,4 +223,11 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    updateSearchString: (searchString) =>
+      dispatch(updateSearchString(searchString)),
+  };
+};
+
+export default connect(undefined, mapDispatchToProps)(Navbar);
