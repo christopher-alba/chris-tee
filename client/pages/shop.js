@@ -127,7 +127,7 @@ const Shop = (props) => {
   const [editProductOpen, setEditProductOpen] = useState(false);
 
   useEffect(() => {
-    console.log(props);
+    console.log(data);
     if (!emptyResults && data) {
       setProducts(data.products);
     }
@@ -149,18 +149,17 @@ const Shop = (props) => {
           return false;
         })
       );
-    } else if (data) {
-      console.log(data);
+    } else if (data && props.globalSearchTerm) {
       setProducts(
         data.products.filter((product) => {
-          console.log(props);
           return product.name
             .toLowerCase()
             .includes(props.globalSearchTerm.toLowerCase());
         })
       );
     }
-  }, [props.globalSearchTerm]);
+  }, [data, props.globalSearchTerm]);
+
   if (loading) {
     return <div>loading...</div>;
   }
@@ -481,7 +480,6 @@ const Shop = (props) => {
 };
 
 const mapStateToProps = (state) => {
-  console.log(state);
   return {
     globalSearchTerm: state.searchbar.searchString,
   };
