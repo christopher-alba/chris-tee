@@ -1,44 +1,44 @@
-import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '../components/dialogTitle';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
-import { useMutation, useQuery } from '@apollo/client';
-import { GET_PRODUCTS, GET_PRODUCT } from '../ApolloClient/queries';
-import { EDIT_PRODUCT } from '../ApolloClient/mutations';
+import React, { useEffect, useState } from "react";
+import { makeStyles } from "@material-ui/core";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "../components/dialogTitle";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import FormControl from "@material-ui/core/FormControl";
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
+import InputLabel from "@material-ui/core/InputLabel";
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_PRODUCTS, GET_PRODUCT } from "../ApolloClient/queries";
+import { EDIT_PRODUCT } from "../ApolloClient/mutations";
 
 const useStyles = makeStyles({
   editProductForm: {
-    padding: '50px',
-    display: 'flex',
-    flexDirection: 'column',
-    width: '500px',
+    padding: "50px",
+    display: "flex",
+    flexDirection: "column",
+    width: "500px",
   },
   editProductFormInput: {
-    marginBottom: '20px',
+    marginBottom: "20px",
   },
   filterLabel: {
-    background: 'white',
-    padding: '5px',
+    background: "white",
+    padding: "5px",
   },
 });
 const EditProductDialog = ({ handleEditProductClose, editProductOpen, id }) => {
   const classes = useStyles();
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
-  const [description, setDescription] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
-  const [clothingType, setClothingType] = useState('');
-  const [orientation, setOrientation] = useState('');
+  const [description, setDescription] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [clothingType, setClothingType] = useState("");
+  const [orientation, setOrientation] = useState("");
   const [editProduct] = useMutation(EDIT_PRODUCT);
   const { loading, error, data } = useQuery(GET_PRODUCT, {
     variables: {
-      id: id || 'invalidid123',
+      id: id || "invalidid123",
     },
   });
 
@@ -98,7 +98,9 @@ const EditProductDialog = ({ handleEditProductClose, editProductOpen, id }) => {
             setDescription(evt.target.value);
           }}
         />
+        <Box className="editFileDisplayArea"></Box>
         <TextField
+          type="file"
           value={imageUrl}
           label="image url"
           variant="outlined"
