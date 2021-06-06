@@ -1,168 +1,181 @@
-import React, { useEffect, useState } from 'react';
-import Container from '@material-ui/core/Container';
-import Box from '@material-ui/core/Box';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import { makeStyles } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import { useQuery, useMutation } from '@apollo/client';
-import { GET_PRODUCTS, AUTHENTICATE } from '../ApolloClient/queries';
-import { useLocation } from 'react-router-dom';
-import { DELETE_PRODUCT } from '../ApolloClient/mutations';
-import CreateProductDialog from '../components/createProductDialog';
-import EditProductDialog from '../components/editProductDialog';
+import React, { useEffect, useState } from "react";
+import Container from "@material-ui/core/Container";
+import Box from "@material-ui/core/Box";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import { makeStyles } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import { useQuery, useMutation } from "@apollo/client";
+import { GET_PRODUCTS, AUTHENTICATE } from "../ApolloClient/queries";
+import { useLocation } from "react-router-dom";
+import { DELETE_PRODUCT } from "../ApolloClient/mutations";
+import CreateProductDialog from "../components/createProductDialog";
+import EditProductDialog from "../components/editProductDialog";
+import { connect } from "react-redux";
 
 const useStyles = makeStyles(() => ({
   filterContainerWrapper: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    padding: '10px 20px',
-    border: '1px solid lightgray',
-    borderRadius: '0.5rem',
+    display: "flex",
+    flexWrap: "wrap",
+    alignItems: "center",
+    padding: "10px 20px",
+    border: "1px solid lightgray",
+    borderRadius: "0.5rem",
   },
   filter: {
-    width: '150px',
+    width: "150px",
   },
   filterTitle: {
-    marginRight: '100px',
+    marginRight: "100px",
   },
   filterWrapper: {
-    marginRight: '50px',
+    marginRight: "50px",
   },
   shopTitle: {
-    marginTop: '100px',
-    marginBottom: '10px',
+    marginTop: "100px",
+    marginBottom: "10px",
   },
   shopSubTitle: {
-    marginTop: '0px',
+    marginTop: "0px",
     fontWeight: 200,
   },
   filterLabel: {
-    background: 'white',
+    background: "white",
   },
   setFilterButton: {
-    height: '56px',
-    padding: '0 20px 0 20px',
-    background: 'black',
-    marginLeft: 'auto',
-    color: 'white',
-    '&:hover': {
-      background: '#2e2e2e',
+    height: "56px",
+    padding: "0 20px 0 20px",
+    background: "black",
+    marginLeft: "auto",
+    color: "white",
+    "&:hover": {
+      background: "#2e2e2e",
     },
   },
   productsWrapper: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginBottom: '50px',
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginBottom: "50px",
   },
   product: {
-    width: '270px',
-    overflow: 'hidden',
-    position: 'relative',
-    margin: '0 auto',
-    marginTop: '10px',
-    padding: '15px',
+    width: "270px",
+    overflow: "hidden",
+    position: "relative",
+    margin: "0 auto",
+    marginTop: "10px",
+    padding: "15px",
   },
   productLabel: {},
   pageSelectorWrapper: {
-    marginTop: '20px',
-    marginBottom: '20px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    marginTop: "20px",
+    marginBottom: "20px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   pageNumber: {
     letterSpacing: 5,
     fontWeight: 200,
   },
   adminControls: {
-    border: '1px solid lightgray',
-    padding: '10px',
-    borderRadius: '0.5rem',
+    border: "1px solid lightgray",
+    padding: "10px",
+    borderRadius: "0.5rem",
   },
   adminControlButton: {
-    marginRight: '10px',
+    marginRight: "10px",
   },
   visitProduct: {
-    position: 'absolute',
-    right: '15px',
-    bottom: '15px',
+    position: "absolute",
+    right: "15px",
+    bottom: "15px",
   },
   productImage: {
-    width: '270px',
-    margin: '0 auto',
+    width: "270px",
+    margin: "0 auto",
   },
   productImageWrapper: {
-    height: '270px',
-    overflow: 'hidden',
+    height: "270px",
+    overflow: "hidden",
   },
 }));
 
-const Shop = () => {
-  let categoryTitle = 'ALL';
+const Shop = (props) => {
+  let categoryTitle = "ALL";
   const searchParams = useLocation().search;
   const classes = useStyles();
   const { loading, error, data } = useQuery(GET_PRODUCTS);
-  const { loading: authLoading, error: authError, data: authData } = useQuery(
-    AUTHENTICATE
-  );
+  const {
+    loading: authLoading,
+    error: authError,
+    data: authData,
+  } = useQuery(AUTHENTICATE);
   const [deleteProduct] = useMutation(DELETE_PRODUCT);
   const [currentPage, setCurrentPage] = useState(1);
   const [lowerCount, setLowerCount] = useState(0);
   const [upperCount, setUpperCount] = useState(8);
   const [products, setProducts] = useState([]);
   const [emptyResults, setEmptyResults] = useState(false);
-  const [basicFilter, setBasicFilter] = useState('');
-  const [clothingTypeFilter, setClothingTypeFilter] = useState('');
-  const [orientationFilter, setOrientationFilter] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState('');
+  const [basicFilter, setBasicFilter] = useState("");
+  const [clothingTypeFilter, setClothingTypeFilter] = useState("");
+  const [orientationFilter, setOrientationFilter] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState("");
   const [createProductOpen, setCreateProductOpen] = useState(false);
   const [editProductOpen, setEditProductOpen] = useState(false);
 
   useEffect(() => {
+    console.log(props);
     if (!emptyResults && data) {
       setProducts(data.products);
     }
-
-    if (searchParams.includes('masculine') && data) {
+    if (searchParams.includes("masculine") && data) {
       setProducts(
         data.products.filter((product) => {
-          if (product.orientation === 'MASCULINE') {
+          if (product.orientation === "MASCULINE") {
+            return true;
+          }
+          return false;
+        })
+      );
+    } else if (searchParams.includes("feminine") && data) {
+      setProducts(
+        data.products.filter((product) => {
+          if (product.orientation === "FEMININE") {
+            return true;
+          }
+          return false;
+        })
+      );
+    } else if (data) {
+      setProducts(
+        data.products.filter((product) => {
+          if (
+            product.name.toLowerCase() === props.globalSearchTerm.toLowerCase()
+          ) {
             return true;
           }
           return false;
         })
       );
     }
-    if (searchParams.includes('feminine') && data) {
-      setProducts(
-        data.products.filter((product) => {
-          if (product.orientation === 'FEMININE') {
-            return true;
-          }
-          return false;
-        })
-      );
-    }
-  }, [categoryTitle, data, searchParams]);
+  }, [props.globalSearchTerm]);
   if (loading) {
     return <div>loading...</div>;
   }
 
-  if (searchParams.includes('masculine')) {
-    categoryTitle = 'MASCULINE';
+  if (searchParams.includes("masculine")) {
+    categoryTitle = "MASCULINE";
   }
-  if (searchParams.includes('feminine')) {
-    categoryTitle = 'FEMININE';
+  if (searchParams.includes("feminine")) {
+    categoryTitle = "FEMININE";
   }
 
   let adminPermission = false;
   if (authData) {
-    if (authData.me.permission === 'ADMIN') {
+    if (authData.me.permission === "ADMIN") {
       adminPermission = true;
     }
   }
@@ -190,10 +203,10 @@ const Shop = () => {
         let activeFilters = 0;
         let matches = 0;
         //check which filters are active
-        if (clothingTypeFilter !== '') {
+        if (clothingTypeFilter !== "") {
           activeFilters++;
         }
-        if (orientationFilter !== '') {
+        if (orientationFilter !== "") {
           activeFilters++;
         }
         //check if product matches active filters
@@ -215,20 +228,20 @@ const Shop = () => {
         setEmptyResults(true);
       }
 
-      if (basicFilter === '') {
+      if (basicFilter === "") {
         return newProducts;
       }
 
       const orderedProducts = newProducts.sort((a, b) => {
-        if (basicFilter === 'lowest') {
+        if (basicFilter === "lowest") {
           return a.price - b.price;
         }
-        if (basicFilter === 'highest') {
+        if (basicFilter === "highest") {
           return b.price - a.price;
         }
         var nameA = a.name.toUpperCase(); // ignore upper and lowercase
         var nameB = b.name.toUpperCase(); // ignore upper and lowercase
-        if (basicFilter === 'a-z') {
+        if (basicFilter === "a-z") {
           if (nameA < nameB) {
             return -1;
           }
@@ -239,7 +252,7 @@ const Shop = () => {
           // names must be equal
           return 0;
         }
-        if (basicFilter === 'z-a') {
+        if (basicFilter === "z-a") {
           if (nameA < nameB) {
             return 1;
           }
@@ -261,7 +274,7 @@ const Shop = () => {
   return (
     <Container>
       <h1 className={classes.shopTitle}>
-        {adminPermission ? 'ADMIN SHOPPING PAGE' : 'SHOPPING PAGE'}
+        {adminPermission ? "ADMIN SHOPPING PAGE" : "SHOPPING PAGE"}
       </h1>
       <h2 className={classes.shopSubTitle}>
         BROWSING {categoryTitle} PRODUCTS
@@ -326,7 +339,7 @@ const Shop = () => {
           variant="outlined"
           className={classes.setFilterButton}
           onClick={() => {
-            location.replace('#/shop');
+            location.replace("#/shop");
             handleSetFiltersClick();
             setLowerCount(0);
             setUpperCount(8);
@@ -353,7 +366,7 @@ const Shop = () => {
         <h4 className={classes.pageNumber}>
           {renderedProducts.length > 0
             ? `Page ${currentPage}/${totalPages}`
-            : 'No products matched your filters'}
+            : "No products matched your filters"}
         </h4>
         <Button
           variant="outlined"
@@ -409,7 +422,7 @@ const Shop = () => {
                 variant="outlined"
                 className={classes.adminControlButton}
                 onClick={() => {
-                  setSelectedProduct('');
+                  setSelectedProduct("");
                 }}
               >
                 Deselect Product
@@ -424,10 +437,10 @@ const Shop = () => {
             key={product.id}
             className={classes.product}
             onClick={() => {
-              adminPermission ? setSelectedProduct(product.id) : '';
+              adminPermission ? setSelectedProduct(product.id) : "";
             }}
             style={{
-              border: product.id === selectedProduct ? '3px solid black' : '',
+              border: product.id === selectedProduct ? "3px solid black" : "",
             }}
           >
             <Box className={classes.productImageWrapper}>
@@ -437,7 +450,7 @@ const Shop = () => {
                 className={classes.productImage}
                 onError={(image) => {
                   image.target.src =
-                    'https://www.k3ma.com/wp-content/uploads/2017/04/default-image.jpg';
+                    "https://www.k3ma.com/wp-content/uploads/2017/04/default-image.jpg";
                 }}
               />
             </Box>
@@ -468,4 +481,11 @@ const Shop = () => {
   );
 };
 
-export default Shop;
+const mapStateToProps = (state) => {
+  console.log(state);
+  return {
+    globalSearchTerm: state.searchbar.searchterm,
+  };
+};
+
+export default connect(mapStateToProps, undefined)(Shop);
