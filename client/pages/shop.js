@@ -150,14 +150,13 @@ const Shop = (props) => {
         })
       );
     } else if (data) {
+      console.log(data);
       setProducts(
         data.products.filter((product) => {
-          if (
-            product.name.toLowerCase() === props.globalSearchTerm.toLowerCase()
-          ) {
-            return true;
-          }
-          return false;
+          console.log(props);
+          return product.name
+            .toLowerCase()
+            .includes(props.globalSearchTerm.toLowerCase());
         })
       );
     }
@@ -484,7 +483,7 @@ const Shop = (props) => {
 const mapStateToProps = (state) => {
   console.log(state);
   return {
-    globalSearchTerm: state.searchbar.searchterm,
+    globalSearchTerm: state.searchbar.searchString,
   };
 };
 

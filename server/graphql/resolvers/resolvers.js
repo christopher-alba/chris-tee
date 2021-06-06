@@ -49,7 +49,7 @@ exports.resolvers = {
   product: ({ id }) => getProduct(id),
   products: () => getProducts(),
   me: (args, context) => {
-    // console.log(context.user)
+    // //console.log(context.user)
     if (context().loggedIn) {
       return context().user;
     } else {
