@@ -1,8 +1,18 @@
-const path = require("path");
-const express = require("express");
-const server = express();
-server.use(express.json());
-server.use(express.static(path.join(__dirname, "./public")));
-server.use(express.json({limit: '50mb'}));
-server.use(express.urlencoded({limit: '50mb', extended: true, parameterLimit:1000000}));
-module.exports = server;
+const path = require('path')
+const express = require('express')
+const server = express()
+const cors = require('cors')
+
+const routes = require('./route')
+
+// Middleware
+server.use(express.json())
+server.use(express.urlencoded({ extended: true }))
+server.use(cors())
+
+// Routes
+routes(server)
+
+server.use(express.static(path.join(__dirname, './public')))
+
+module.exports = server

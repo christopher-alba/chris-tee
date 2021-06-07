@@ -1,44 +1,104 @@
-import React, { useState } from "react";
-import { Box, makeStyles } from "@material-ui/core";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "../components/dialogTitle";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import FormControl from "@material-ui/core/FormControl";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import InputLabel from "@material-ui/core/InputLabel";
-import { useMutation } from "@apollo/client";
-import { GET_PRODUCTS } from "../ApolloClient/queries";
-import { CREATE_PRODUCT } from "../ApolloClient/mutations";
+import React, { useState } from 'react'
+import { Box, makeStyles } from '@material-ui/core'
+import Dialog from '@material-ui/core/Dialog'
+import DialogTitle from '../components/dialogTitle'
+import TextField from '@material-ui/core/TextField'
+import Button from '@material-ui/core/Button'
+import FormControl from '@material-ui/core/FormControl'
+import MenuItem from '@material-ui/core/MenuItem'
+import Select from '@material-ui/core/Select'
+import InputLabel from '@material-ui/core/InputLabel'
+import { useMutation } from '@apollo/client'
+import { GET_PRODUCTS } from '../ApolloClient/queries'
+import { CREATE_PRODUCT } from '../ApolloClient/mutations'
+
+import { fileUpload } from '../api'
 
 const useStyles = makeStyles({
   createProductForm: {
-    padding: "50px",
-    display: "flex",
-    flexDirection: "column",
-    width: "500px",
+    padding: '50px',
+    display: 'flex',
+    flexDirection: 'column',
+    width: '500px'
   },
   createProductFormInput: {
-    marginBottom: "20px",
+    marginBottom: '20px'
   },
   filterLabel: {
-    background: "white",
-    padding: "5px",
-  },
-});
+    background: 'white',
+    padding: '5px'
+  }
+})
 const CreateProductDialog = ({
   handleCreateProductClose,
-  createProductOpen,
+  createProductOpen
 }) => {
-  const classes = useStyles();
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState(0);
-  const [description, setDescription] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [clothingType, setClothingType] = useState("");
-  const [orientation, setOrientation] = useState("");
-  const [createProduct] = useMutation(CREATE_PRODUCT);
+  const classes = useStyles()
+  const [name, setName] = useState('')
+  const [price, setPrice] = useState(0)
+  const [description, setDescription] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
+  const [file, setFile] = useState([])
+  const [clothingType, setClothingType] = useState('')
+  const [orientation, setOrientation] = useState('')
+  const [createProduct] = useMutation(CREATE_PRODUCT)
+
+  // Functions
+  const onfileChange = (evt) => {
+    console.log(evt.target.files)
+    setFile(evt.target.files[0])
+    const file = evt.target.files[0]
+
+    var imageType = /image.*/
+
+    const fileDisplayArea =
+      document.getElementsByClassName('fileDisplayArea')[0]
+    if (file.type.match(imageType)) {
+      var reader = new FileReader()
+      reader.onload = function (e) {
+        fileDisplayArea.innerHTML = ''
+
+        // Create a new image.
+        var img = new Image()
+        // Set the img src property using the data URL.
+        img.src = reader.result
+        setImageUrl(reader.result)
+        // Add the image to the page.
+        fileDisplayArea.appendChild(img)
+      }
+
+      reader.readAsDataURL(file)
+    } else {
+      fileDisplayArea.innerHTML = 'File not supported!'
+    }
+  }
+
+  const onSubmit = async () => {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('name', name)
+    formData.append('price', Number(price))
+    formData.append('description', description)
+    formData.append('orientation', orientation.toUpperCase())
+    formData.append('clothingType', clothingType.toUpperCase())
+
+    fileUpload(formData)
+    handleCreateProductClose()
+
+    // await createProduct({
+    //   variables: {
+    //     name: name,
+    //     price: Number(price),
+    //     description: description,
+    //     orientation: orientation.toUpperCase(),
+    //     clothingType: clothingType.toUpperCase(),
+    //     image: imageUrl
+    //   },
+    //   refetchQueries: [{ query: GET_PRODUCTS }]
+    // })
+    // handleCreateProductClose()
+  }
+
   return (
     <Dialog onClose={handleCreateProductClose} open={createProductOpen}>
       <DialogTitle
@@ -53,7 +113,7 @@ const CreateProductDialog = ({
           variant="outlined"
           className={classes.createProductFormInput}
           onChange={(evt) => {
-            setName(evt.target.value);
+            setName(evt.target.value)
           }}
         />
         <TextField
@@ -62,7 +122,7 @@ const CreateProductDialog = ({
           className={classes.createProductFormInput}
           type="number"
           onChange={(evt) => {
-            setPrice(evt.target.value);
+            setPrice(evt.target.value)
           }}
         />
         <TextField
@@ -73,7 +133,7 @@ const CreateProductDialog = ({
           variant="outlined"
           className={classes.createProductFormInput}
           onChange={(evt) => {
-            setDescription(evt.target.value);
+            setDescription(evt.target.value)
           }}
         />
         <Box className="fileDisplayArea"></Box>
@@ -81,32 +141,7 @@ const CreateProductDialog = ({
           type="file"
           variant="outlined"
           className={classes.createProductFormInput}
-          onChange={(evt) => {
-            const file = evt.target.files[0];
-           
-            var imageType = /image.*/;
-            
-            const fileDisplayArea =
-              document.getElementsByClassName("fileDisplayArea")[0];
-            if (file.type.match(imageType)) {
-              var reader = new FileReader();
-              reader.onload = function (e) {
-                fileDisplayArea.innerHTML = "";
-
-                // Create a new image.
-                var img = new Image();
-                // Set the img src property using the data URL.
-                img.src = reader.result;
-                setImageUrl(reader.result);
-                // Add the image to the page.
-                fileDisplayArea.appendChild(img);
-              };
-
-              reader.readAsDataURL(file);
-            } else {
-              fileDisplayArea.innerHTML = "File not supported!";
-            }
-          }}
+          onChange={onfileChange}
         />
         <FormControl variant="outlined" className={classes.filterWrapper}>
           <InputLabel id="clothing-type" className={classes.filterLabel}>
@@ -118,7 +153,7 @@ const CreateProductDialog = ({
             value={clothingType}
             className={classes.createProductFormInput}
             onChange={(evt) => {
-              setClothingType(evt.target.value);
+              setClothingType(evt.target.value)
             }}
           >
             <MenuItem value="tshirt">t-shirts</MenuItem>
@@ -138,7 +173,7 @@ const CreateProductDialog = ({
             value={orientation}
             className={classes.createProductFormInput}
             onChange={(evt) => {
-              setOrientation(evt.target.value);
+              setOrientation(evt.target.value)
             }}
           >
             <MenuItem value="feminine">feminine</MenuItem>
@@ -146,29 +181,12 @@ const CreateProductDialog = ({
             <MenuItem value="unisex">unisex</MenuItem>
           </Select>
         </FormControl>
-        <Button
-          variant="outlined"
-          onClick={() => {
-            createProduct({
-              variables: {
-                name: name,
-                price: Number(price),
-                description: description,
-                orientation: orientation.toUpperCase(),
-                clothingType: clothingType.toUpperCase(),
-                image: imageUrl,
-              },
-              refetchQueries: [{ query: GET_PRODUCTS }],
-            }).then(() => {
-              handleCreateProductClose();
-            });
-          }}
-        >
+        <Button variant="outlined" onClick={onSubmit}>
           Create
         </Button>
       </form>
     </Dialog>
-  );
-};
+  )
+}
 
-export default CreateProductDialog;
+export default CreateProductDialog
