@@ -7,6 +7,7 @@ const { makeExecutableSchema } = require("graphql-tools");
 const { readFileSync } = require("fs");
 const { resolvers } = require("./graphql/resolvers/resolvers");
 const { getPayload } = require("./util");
+const express = require("express");
 require("./mongoose/connect");
 
 const typeDefs = gql(
@@ -20,6 +21,8 @@ const schema = makeExecutableSchema({
 });
 
 server.use(cors());
+server.use(express.json({limit: '50mb'}));
+server.use(express.urlencoded({limit: '50mb', extended: true, parameterLimit:1000000}));
 server.use(
   "/graphql",
   graphqlHTTP((req) => ({
